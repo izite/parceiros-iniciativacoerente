@@ -15,7 +15,7 @@ export default function Login() {
     e.preventDefault()
     // Simple authentication simulation
     if (email && password) {
-      navigate("/")
+      navigate("/home")
     }
   }
 
