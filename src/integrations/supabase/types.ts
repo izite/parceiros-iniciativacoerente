@@ -36,15 +36,7 @@ export type Database = {
           id?: string
           nome_arquivo?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "arquivos_criado_por_fkey"
-            columns: ["criado_por"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       contactos: {
         Row: {
