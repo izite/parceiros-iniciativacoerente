@@ -8,12 +8,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useContacts } from "@/contexts/contacts-context"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, Phone, Mail, User, ChevronRight } from "lucide-react"
+import { Plus, Phone, Mail, User, X } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 export default function Contacts() {
-  const { contacts, loading, addContact } = useContacts()
+  const { contacts, loading, addContact, deleteContact } = useContacts()
   const { user } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -57,6 +57,16 @@ export default function Contacts() {
     setTelefone("")
     setEmpresa("")
     setOpen(false)
+  }
+
+  const handleDeleteContact = async (contactId: string, contactName: string) => {
+    if (window.confirm(`Tem a certeza que deseja eliminar o contacto "${contactName}"?`)) {
+      await deleteContact(contactId)
+      toast({
+        title: "Contacto eliminado",
+        description: `O contacto "${contactName}" foi eliminado com sucesso.`
+      })
+    }
   }
 
   if (loading) {
@@ -183,12 +193,12 @@ export default function Contacts() {
                     </div>
                   </div>
                   <Button 
-                    variant="ghost" 
+                    variant="destructive" 
                     size="sm" 
-                    onClick={() => navigate(`/add-contact?edit=${contact.id}`)}
+                    onClick={() => handleDeleteContact(contact.id, contact.nome)}
                     className="ml-2"
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               ))}
