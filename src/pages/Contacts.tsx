@@ -81,8 +81,8 @@ export default function Contacts() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex items-center gap-2">
-            <Phone className="h-5 w-5 text-orange-500" />
-            <CardTitle className="text-orange-500">CONTACTOS PM CONSULTING</CardTitle>
+            <Phone className="h-5 w-5 text-white" />
+            <CardTitle className="text-white">Contactos Parceiros Iniciativa Coerente</CardTitle>
           </div>
           {isBackoffice && (
             <Dialog open={open} onOpenChange={setOpen}>
