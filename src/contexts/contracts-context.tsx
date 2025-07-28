@@ -1,46 +1,139 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
 
 export type Contract = {
   id: string
-  nif: string
-  cliente: string
-  ponto: string
-  fornecedor: string
-  estado: string
-  inicioForn: string
-  consumo: string
-  comissao: string
-  subUtilizador: string
+  nif?: string
+  cliente_nome?: string
+  cpe_cui?: string
+  fornecedor?: string
+  estado?: string
+  inicio_fornecimento?: string
+  consumo?: number
+  comissao?: number
+  sub_utilizador?: string
+  tipo_preco?: string
+  tipo_energia?: string
+  notas?: string
+  autor_id?: string
+  parceiro_id?: string
 }
 
 type ContractsContextType = {
   contracts: Contract[]
-  addContract: (contract: Omit<Contract, 'id'>) => void
-  updateContract: (id: string, updates: Partial<Contract>) => void
+  loading: boolean
+  addContract: (contract: Omit<Contract, 'id'>) => Promise<void>
+  updateContract: (id: string, updates: Partial<Contract>) => Promise<void>
+  deleteContract: (id: string) => Promise<void>
+  getContract: (id: string) => Contract | undefined
+  fetchContracts: () => Promise<void>
 }
 
 const ContractsContext = createContext<ContractsContextType | undefined>(undefined)
 
 export function ContractsProvider({ children }: { children: React.ReactNode }) {
   const [contracts, setContracts] = useState<Contract[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const addContract = (newContract: Omit<Contract, 'id'>) => {
-    const newId = (220000 + contracts.length).toString()
-    const contract: Contract = {
-      ...newContract,
-      id: newId
+  const fetchContracts = async () => {
+    try {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('contratos')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching contracts:', error)
+        return
+      }
+
+      setContracts(data || [])
+    } catch (error) {
+      console.error('Error:', error)
+    } finally {
+      setLoading(false)
     }
-    setContracts(prev => [...prev, contract])
   }
 
-  const updateContract = (id: string, updates: Partial<Contract>) => {
-    setContracts(prev => prev.map(contract => 
-      contract.id === id ? { ...contract, ...updates } : contract
-    ))
+  const addContract = async (newContract: Omit<Contract, 'id'>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      const contractData = {
+        ...newContract,
+        autor_id: user?.id
+      }
+
+      const { error } = await supabase
+        .from('contratos')
+        .insert([contractData])
+
+      if (error) {
+        console.error('Error adding contract:', error)
+        return
+      }
+
+      await fetchContracts()
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
+
+  const updateContract = async (id: string, updates: Partial<Contract>) => {
+    try {
+      const { error } = await supabase
+        .from('contratos')
+        .update(updates)
+        .eq('id', id)
+
+      if (error) {
+        console.error('Error updating contract:', error)
+        return
+      }
+
+      await fetchContracts()
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  const deleteContract = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('contratos')
+        .delete()
+        .eq('id', id)
+
+      if (error) {
+        console.error('Error deleting contract:', error)
+        return
+      }
+
+      await fetchContracts()
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  const getContract = (id: string) => {
+    return contracts.find(contract => contract.id === id)
+  }
+
+  useEffect(() => {
+    fetchContracts()
+  }, [])
 
   return (
-    <ContractsContext.Provider value={{ contracts, addContract, updateContract }}>
+    <ContractsContext.Provider value={{ 
+      contracts, 
+      loading, 
+      addContract, 
+      updateContract, 
+      deleteContract, 
+      getContract, 
+      fetchContracts 
+    }}>
       {children}
     </ContractsContext.Provider>
   )

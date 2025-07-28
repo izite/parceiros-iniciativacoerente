@@ -1,6 +1,6 @@
 import { Phone, Calculator, FileText, AlertTriangle, ShoppingCart, Leaf, Receipt, Search, Users, HardDrive, MessageSquare, BarChart3, Zap, Home } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
-import { useUser } from "@/contexts/user-context"
+import { useAuth } from "@/contexts/auth-context"
 
 import {
   Sidebar,
@@ -26,7 +26,7 @@ const items = [
 
 export function AppSidebar() {
   const { state } = useSidebar()
-  const { user } = useUser()
+  const { user, signOut } = useAuth()
   const location = useLocation()
   const currentPath = location.pathname
 
