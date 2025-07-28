@@ -47,22 +47,55 @@ const Requests = () => {
   const { requests, loading } = useRequests()
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredRequests, setFilteredRequests] = useState(requests)
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
 
-  const handleSearch = (value: string) => {
-    setSearchTerm(value)
-    const filtered = requests.filter(request =>
-      request.assunto.toLowerCase().includes(value.toLowerCase()) ||
-      request.id.toLowerCase().includes(value.toLowerCase()) ||
-      request.cliente_nome.toLowerCase().includes(value.toLowerCase()) ||
-      request.cliente_nif.includes(value)
-    )
+  const handleFilter = (status: string | null) => {
+    setActiveFilter(activeFilter === status ? null : status)
+  }
+
+  const applyFilters = () => {
+    let filtered = requests
+
+    // Apply status filter
+    if (activeFilter) {
+      filtered = filtered.filter(request => {
+        const requestStatus = request.estado?.toLowerCase()
+        switch (activeFilter) {
+          case 'aberto':
+            return requestStatus === 'aberto'
+          case 'fechado':
+            return requestStatus === 'fechado'
+          case 'analise':
+            return requestStatus === 'análise' || requestStatus === 'analise'
+          case 'pendente':
+            return requestStatus?.includes('pendente')
+          default:
+            return true
+        }
+      })
+    }
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(request =>
+        request.assunto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.cliente_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.cliente_nif.includes(searchTerm)
+      )
+    }
+
     setFilteredRequests(filtered)
   }
 
-  // Update filtered requests when requests change
+  const handleSearch = (value: string) => {
+    setSearchTerm(value)
+  }
+
+  // Update filtered requests when requests, activeFilter, or searchTerm change
   React.useEffect(() => {
-    handleSearch(searchTerm)
-  }, [requests, searchTerm])
+    applyFilters()
+  }, [requests, activeFilter, searchTerm])
 
   const pedidosEmCurso = requests.filter(r => 
     r.estado.toLowerCase().includes("aberto") || 
@@ -80,10 +113,15 @@ const Requests = () => {
           <h1 className="text-2xl font-semibold">Pedidos</h1>
       </div>
 
-      {/* Status Cards */}
+      {/* Status Cards - Filtros Clicáveis */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {/* Aberto - Verde */}
-        <Card className="border-green-500/20">
+        <Card 
+          className={`border-green-500/20 cursor-pointer hover:bg-green-500/5 transition-colors ${
+            activeFilter === 'aberto' ? 'bg-green-500/10 ring-2 ring-green-500/50' : ''
+          }`}
+          onClick={() => handleFilter('aberto')}
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
@@ -98,7 +136,12 @@ const Requests = () => {
         </Card>
 
         {/* Fechado - Vermelho */}
-        <Card className="border-red-500/20">
+        <Card 
+          className={`border-red-500/20 cursor-pointer hover:bg-red-500/5 transition-colors ${
+            activeFilter === 'fechado' ? 'bg-red-500/10 ring-2 ring-red-500/50' : ''
+          }`}
+          onClick={() => handleFilter('fechado')}
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -113,7 +156,12 @@ const Requests = () => {
         </Card>
 
         {/* Análise - Amarelo */}
-        <Card className="border-yellow-500/20">
+        <Card 
+          className={`border-yellow-500/20 cursor-pointer hover:bg-yellow-500/5 transition-colors ${
+            activeFilter === 'analise' ? 'bg-yellow-500/10 ring-2 ring-yellow-500/50' : ''
+          }`}
+          onClick={() => handleFilter('analise')}
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -128,7 +176,12 @@ const Requests = () => {
         </Card>
 
         {/* Pendente - Azul */}
-        <Card className="border-blue-500/20">
+        <Card 
+          className={`border-blue-500/20 cursor-pointer hover:bg-blue-500/5 transition-colors ${
+            activeFilter === 'pendente' ? 'bg-blue-500/10 ring-2 ring-blue-500/50' : ''
+          }`}
+          onClick={() => handleFilter('pendente')}
+        >
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
