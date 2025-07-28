@@ -32,16 +32,19 @@ const AddUser = () => {
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('id, nome')
-        .eq('role', 'parceiro')
-        .order('nome')
+        .select('id, empresa')
+        .eq('perfil', 'parceiro')
+        .order('empresa')
 
       if (error) {
         console.error('Error fetching parceiros:', error)
         return
       }
 
-      setParceiros(data || [])
+      setParceiros(data?.map(user => ({
+        id: user.id,
+        nome: user.empresa || 'Sem empresa'
+      })) || [])
     } catch (error) {
       console.error('Error fetching parceiros:', error)
     }
@@ -61,7 +64,9 @@ const AddUser = () => {
         email: inputs.email,
         telefone: inputs.telemovel,
         empresa: inputs.empresa,
-        estado: inputs.estado
+        estado: inputs.estado,
+        perfil: inputs.nivel,
+        parceiro_id: inputs.parceiro_id
       })
       navigate("/users")
     } catch (error) {

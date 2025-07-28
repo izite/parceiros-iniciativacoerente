@@ -8,6 +8,8 @@ export type AppUser = {
   telefone: string
   empresa: string
   estado: string
+  perfil?: string
+  parceiro_id?: string
 }
 
 type UsersContextType = {
@@ -45,7 +47,9 @@ export function UsersProvider({ children }: { children: ReactNode }) {
         email: user.email,
         telefone: user.telefone || '',
         empresa: user.empresa || '',
-        estado: user.estado || 'Ativo'
+        estado: user.estado || 'Ativo',
+        perfil: user.perfil || '',
+        parceiro_id: user.parceiro_id || ''
       }))
 
       setUsers(mappedUsers)
@@ -64,6 +68,8 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           telefone: user.telefone,
           empresa: user.empresa,
           estado: user.estado,
+          perfil: user.perfil,
+          parceiro_id: user.parceiro_id,
           tipo: 'utilizador'
         }])
         .select()
@@ -80,7 +86,9 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           email: data[0].email,
           telefone: data[0].telefone || '',
           empresa: data[0].empresa || '',
-          estado: data[0].estado || 'Ativo'
+          estado: data[0].estado || 'Ativo',
+          perfil: data[0].perfil || '',
+          parceiro_id: data[0].parceiro_id || ''
         }
         setUsers(prev => [newUser, ...prev])
       }
