@@ -38,16 +38,17 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
   const fetchContracts = async () => {
     try {
       setLoading(true)
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('contratos')
         .select('*')
         .order('created_at', { ascending: false })
 
       if (error) {
         console.error('Error fetching contracts:', error)
-        return
+        throw error
       }
 
+      console.log('Contracts fetched:', data)
       setContracts(data || [])
     } catch (error) {
       console.error('Error:', error)
@@ -65,54 +66,59 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
         autor_id: user?.id
       }
 
-      const { error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('contratos')
         .insert([contractData])
+        .select()
 
       if (error) {
         console.error('Error adding contract:', error)
-        return
+        throw error
       }
 
+      console.log('Contract added successfully:', data)
       await fetchContracts()
     } catch (error) {
       console.error('Error:', error)
+      throw error
     }
   }
 
   const updateContract = async (id: string, updates: Partial<Contract>) => {
     try {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('contratos')
         .update(updates)
         .eq('id', id)
 
       if (error) {
         console.error('Error updating contract:', error)
-        return
+        throw error
       }
 
       await fetchContracts()
     } catch (error) {
       console.error('Error:', error)
+      throw error
     }
   }
 
   const deleteContract = async (id: string) => {
     try {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('contratos')
         .delete()
         .eq('id', id)
 
       if (error) {
         console.error('Error deleting contract:', error)
-        return
+        throw error
       }
 
       await fetchContracts()
     } catch (error) {
       console.error('Error:', error)
+      throw error
     }
   }
 
