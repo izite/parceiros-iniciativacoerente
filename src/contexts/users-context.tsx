@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import { supabase } from "@/integrations/supabase/client"
 
 export type AppUser = {
   id: string
@@ -7,7 +8,6 @@ export type AppUser = {
   telefone: string
   empresa: string
   estado: string
-  dataNascimento?: Date
 }
 
 type UsersContextType = {
@@ -21,55 +21,72 @@ type UsersContextType = {
 const UsersContext = createContext<UsersContextType | undefined>(undefined)
 
 export function UsersProvider({ children }: { children: ReactNode }) {
-  const [users, setUsers] = useState<AppUser[]>([
-    {
-      id: "1",
-      nome: "João Silva",
-      email: "joao.silva@company.com",
-      telefone: "+351 912 345 678",
-      empresa: "Tech Solutions",
-      estado: "Activo"
-    },
-    {
-      id: "2", 
-      nome: "Maria Santos",
-      email: "maria.santos@enterprise.com",
-      telefone: "+351 923 456 789",
-      empresa: "Enterprise Corp",
-      estado: "Activo"
-    },
-    {
-      id: "3",
-      nome: "Pedro Costa",
-      email: "pedro.costa@business.com", 
-      telefone: "+351 934 567 890",
-      empresa: "Business Ltd",
-      estado: "Activo"
-    },
-    {
-      id: "4",
-      nome: "Ana Ferreira",
-      email: "ana.ferreira@solutions.com",
-      telefone: "+351 945 678 901",
-      empresa: "Solutions Inc",
-      estado: "Activo"
-    },
-    {
-      id: "5",
-      nome: "Carlos Oliveira", 
-      email: "carlos.oliveira@group.com",
-      telefone: "+351 956 789 012",
-      empresa: "Group Holdings",
-      estado: "Activo"
-    }
-  ])
+  const [users, setUsers] = useState<AppUser[]>([])
 
-  const addUser = (user: Omit<AppUser, 'id'>) => {
-    const newUser = {
-      ...user,
-      id: Date.now().toString()
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  const fetchUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching users:', error)
+        return
+      }
+
+      const mappedUsers: AppUser[] = data.map(user => ({
+        id: user.id,
+        nome: user.nome || '',
+        email: user.email,
+        telefone: user.telefone || '',
+        empresa: user.empresa || '',
+        estado: user.estado || 'Ativo'
+      }))
+
+      setUsers(mappedUsers)
+    } catch (error) {
+      console.error('Error fetching users:', error)
     }
-    setUsers(prev => [...prev, newUser])
+  }
+
+  const addUser = async (user: Omit<AppUser, 'id'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .insert([{
+          nome: user.nome,
+          email: user.email,
+          telefone: user.telefone,
+          empresa: user.empresa,
+          estado: user.estado,
+          tipo: 'utilizador'
+        }])
+        .select()
+
+      if (error) {
+        console.error('Error creating user:', error)
+        return
+      }
+
+      if (data && data[0]) {
+        const newUser: AppUser = {
+          id: data[0].id,
+          nome: data[0].nome || '',
+          email: data[0].email,
+          telefone: data[0].telefone || '',
+          empresa: data[0].empresa || '',
+          estado: data[0].estado || 'Ativo'
+        }
+        setUsers(prev => [newUser, ...prev])
+      }
+    } catch (error) {
+      console.error('Error creating user:', error)
+    }
   }
 
   const updateUser = (id: string, userData: Partial<AppUser>) => {
