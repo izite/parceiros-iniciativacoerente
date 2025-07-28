@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useUsers } from "@/contexts/users-context"
+import { supabase } from "@/integrations/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,33 +12,66 @@ import { ChevronLeft, Home } from "lucide-react"
 const AddUser = () => {
   const navigate = useNavigate()
   const { addUser } = useUsers()
-  const [formData, setFormData] = useState({
+  const [parceiros, setParceiros] = useState<Array<{id: string, nome: string}>>([])
+  
+  const [inputs, setInputs] = useState({
     estado: "Activo",
     nome: "",
     email: "",
     telemovel: "",
-    empresa: ""
+    empresa: "",
+    nivel: "",
+    parceiro_id: ""
   })
 
+  useEffect(() => {
+    fetchParceiros()
+  }, [])
+
+  const fetchParceiros = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, nome')
+        .eq('role', 'parceiro')
+        .order('nome')
+
+      if (error) {
+        console.error('Error fetching parceiros:', error)
+        return
+      }
+
+      setParceiros(data || [])
+    } catch (error) {
+      console.error('Error fetching parceiros:', error)
+    }
+  }
+
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setInputs(prev => ({
       ...prev,
       [field]: value
     }))
   }
 
+  const criarNovoUtilizador = async () => {
+    try {
+      await addUser({
+        nome: inputs.nome,
+        email: inputs.email,
+        telefone: inputs.telemovel,
+        empresa: inputs.empresa,
+        estado: inputs.estado
+      })
+      navigate("/users")
+    } catch (error) {
+      console.error('Error creating user:', error)
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    addUser({
-      nome: formData.nome,
-      email: formData.email,
-      telefone: formData.telemovel,
-      empresa: formData.empresa,
-      estado: formData.estado
-    })
-    
-    navigate("/users")
+    criarNovoUtilizador()
   }
 
   return (
@@ -70,7 +104,7 @@ const AddUser = () => {
         <CardHeader>
           <CardTitle className="text-lg">Dados Pessoais</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Estado, Nome, Email, Telemóvel, Empresa
+            Estado, Nome, Email, Telemóvel, Empresa, Nível
           </p>
         </CardHeader>
         <CardContent>
@@ -79,7 +113,7 @@ const AddUser = () => {
               {/* Estado */}
               <div className="space-y-2">
                 <Label htmlFor="estado">ESTADO</Label>
-                <Select value={formData.estado} onValueChange={(value) => handleInputChange("estado", value)}>
+                <Select value={inputs.estado} onValueChange={(value) => handleInputChange("estado", value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -90,17 +124,32 @@ const AddUser = () => {
                 </Select>
               </div>
 
-              {/* Nome */}
+              {/* Nível */}
               <div className="space-y-2">
-                <Label htmlFor="nome">NOME</Label>
-                <Input
-                  id="nome"
-                  value={formData.nome}
-                  onChange={(e) => handleInputChange("nome", e.target.value)}
-                  className="border-orange-200 focus:border-orange-500"
-                  placeholder="Nome completo"
-                />
+                <Label htmlFor="nivel">NÍVEL</Label>
+                <Select value={inputs.nivel} onValueChange={(value) => handleInputChange("nivel", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar nível" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="backoffice">Backoffice</SelectItem>
+                    <SelectItem value="parceiro">Parceiro</SelectItem>
+                    <SelectItem value="comercial">Comercial</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
+
+            {/* Nome */}
+            <div className="space-y-2">
+              <Label htmlFor="nome">NOME</Label>
+              <Input
+                id="nome"
+                value={inputs.nome}
+                onChange={(e) => handleInputChange("nome", e.target.value)}
+                className="border-orange-200 focus:border-orange-500"
+                placeholder="Nome completo"
+              />
             </div>
 
             {/* Email */}
@@ -109,7 +158,7 @@ const AddUser = () => {
               <Input
                 id="email"
                 type="email"
-                value={formData.email}
+                value={inputs.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 placeholder="email@exemplo.com"
               />
@@ -124,7 +173,7 @@ const AddUser = () => {
               <Label htmlFor="empresa">EMPRESA</Label>
               <Input
                 id="empresa"
-                value={formData.empresa}
+                value={inputs.empresa}
                 onChange={(e) => handleInputChange("empresa", e.target.value)}
                 placeholder="Nome da empresa"
               />
@@ -135,11 +184,30 @@ const AddUser = () => {
               <Label htmlFor="telemovel">TELEMÓVEL</Label>
               <Input
                 id="telemovel"
-                value={formData.telemovel}
+                value={inputs.telemovel}
                 onChange={(e) => handleInputChange("telemovel", e.target.value)}
                 placeholder="+351 912 345 678"
               />
             </div>
+
+            {/* Parceiro ID - só aparece se nível for comercial */}
+            {inputs.nivel === "comercial" && (
+              <div className="space-y-2">
+                <Label htmlFor="parceiro_id">PARCEIRO</Label>
+                <Select value={inputs.parceiro_id} onValueChange={(value) => handleInputChange("parceiro_id", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar parceiro" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {parceiros.map((parceiro) => (
+                      <SelectItem key={parceiro.id} value={parceiro.id}>
+                        {parceiro.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             {/* Submit Button */}
             <div className="flex justify-end gap-4 pt-6">
