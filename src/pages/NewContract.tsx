@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useContracts } from "@/contexts/contracts-context"
-import { useUser } from "@/contexts/user-context"
+import { supabase } from "@/integrations/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,18 @@ const NewContract = () => {
   const navigate = useNavigate()
   const { addContract } = useContracts()
   const { toast } = useToast()
-  const { user } = useUser()
+  const [currentUser, setCurrentUser] = useState<string>("")
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setCurrentUser(user.email || "")
+        console.log("Current user:", user.email)
+      }
+    }
+    getCurrentUser()
+  }, [])
   
   const [formData, setFormData] = useState({
     nif: "",
@@ -57,8 +68,15 @@ const NewContract = () => {
     inicioFornecimento: undefined as Date | undefined,
     consumo: "",
     comissao: "",
-    subUtilizador: user?.email || ""
+    subUtilizador: ""
   })
+
+  // Atualizar o subUtilizador quando o currentUser estiver disponível
+  useEffect(() => {
+    if (currentUser) {
+      setFormData(prev => ({ ...prev, subUtilizador: currentUser }))
+    }
+  }, [currentUser])
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -73,9 +91,11 @@ const NewContract = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log("Iniciando submissão do contrato...")
+      console.log("🚀 Iniciando submissão do contrato...")
+      console.log("📝 FormData atual:", formData)
       
       if (!formData.nif || !formData.nome) {
+        console.log("❌ Validação falhou - campos obrigatórios em falta")
         toast({
           title: "Campos obrigatórios",
           description: "Por favor, preencha o NIF e o Nome.",
@@ -83,6 +103,20 @@ const NewContract = () => {
         })
         return
       }
+
+      // Verificar se o utilizador está autenticado
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError || !user) {
+        console.log("❌ Utilizador não autenticado:", authError)
+        toast({
+          title: "Erro de autenticação",
+          description: "Por favor, faça login novamente.",
+          variant: "destructive"
+        })
+        return
+      }
+
+      console.log("✅ Utilizador autenticado:", user.email)
 
       const newContract = {
         nif: formData.nif,
@@ -95,13 +129,14 @@ const NewContract = () => {
         cpe_cui: formData.cpe,
         tipo_energia: formData.tipo || "electricidade",
         notas: formData.observacoesContrato,
-        sub_utilizador: formData.subUtilizador
+        sub_utilizador: formData.subUtilizador || user.email
       }
 
-      console.log("Dados do contrato:", newContract)
+      console.log("📋 Dados do contrato a inserir:", newContract)
       
       await addContract(newContract)
       
+      console.log("✅ Contrato criado com sucesso!")
       toast({
         title: "Sucesso",
         description: "Contrato criado com sucesso!",
@@ -109,10 +144,10 @@ const NewContract = () => {
       
       navigate("/contracts")
     } catch (error) {
-      console.error("Erro ao criar contrato:", error)
+      console.error("💥 Erro completo ao criar contrato:", error)
       toast({
         title: "Erro",
-        description: "Erro ao criar contrato. Tente novamente.",
+        description: `Erro ao criar contrato: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
         variant: "destructive"
       })
     }
