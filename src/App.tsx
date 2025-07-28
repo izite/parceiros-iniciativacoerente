@@ -20,6 +20,7 @@ import Requests from "./pages/Requests";
 import NewRequest from "./pages/NewRequest";
 import RequestChat from "./pages/RequestChat";
 import Occurrences from "./pages/Occurrences";
+import NewOccurrence from "./pages/NewOccurrence";
 import OccurrenceDetails from "./pages/OccurrenceDetails";
 
 import Users from "./pages/Users";
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/requests/new" element={<LayoutWrapper><NewRequest /></LayoutWrapper>} />
             <Route path="/requests/:requestId/chat" element={<LayoutWrapper><RequestChat /></LayoutWrapper>} />
             <Route path="/occurrences" element={<LayoutWrapper><Occurrences /></LayoutWrapper>} />
+            <Route path="/new-occurrence" element={<LayoutWrapper><NewOccurrence /></LayoutWrapper>} />
             <Route path="/occurrences/:occurrenceId" element={<LayoutWrapper><OccurrenceDetails /></LayoutWrapper>} />
             <Route path="/users" element={<LayoutWrapper><Users /></LayoutWrapper>} />
             <Route path="/users/add" element={<LayoutWrapper><AddUser /></LayoutWrapper>} />

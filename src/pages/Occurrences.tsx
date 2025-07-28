@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Search, Plus, Eye, AlertCircle, CheckCircle, Clock, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +13,8 @@ const occurrences = [
     status: "Em Análise",
     date: "2024-07-20",
     client: "EMPRESA TESTE, LDA",
-    cpe: "PT0001234567890123456789012"
+    cpe: "PT0001234567890123456789012",
+    nif: "123456789"
   },
   {
     id: "OC002", 
@@ -20,7 +22,8 @@ const occurrences = [
     status: "Resolvido",
     date: "2024-07-18",
     client: "INDUSTRIAL SOLUTIONS",
-    cpe: "PT0001234567890123456789013"
+    cpe: "PT0001234567890123456789013",
+    nif: "987654321"
   },
   {
     id: "OC003",
@@ -28,7 +31,8 @@ const occurrences = [
     status: "Pendente",
     date: "2024-07-22",
     client: "GREEN ENERGY CORP",
-    cpe: "PT0001234567890123456789014"
+    cpe: "PT0001234567890123456789014",
+    nif: "456789123"
   },
   {
     id: "OC004",
@@ -36,7 +40,8 @@ const occurrences = [
     status: "Em Análise",
     date: "2024-07-19",
     client: "CITY MUNICIPAL",
-    cpe: "PT0001234567890123456789015"
+    cpe: "PT0001234567890123456789015",
+    nif: "789123456"
   },
   {
     id: "OC005",
@@ -44,7 +49,8 @@ const occurrences = [
     status: "Cancelado",
     date: "2024-07-15",
     client: "TECH INDUSTRIES LTD",
-    cpe: "PT0001234567890123456789016"
+    cpe: "PT0001234567890123456789016",
+    nif: "321654987"
   }
 ]
 
@@ -68,6 +74,7 @@ const getStatusBadge = (status: string) => {
 }
 
 export default function Occurrences() {
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredOccurrences = occurrences.filter(occurrence =>
@@ -85,7 +92,10 @@ export default function Occurrences() {
           <h1 className="text-2xl font-bold text-foreground">Ocorrências</h1>
           <p className="text-muted-foreground">Gerencie as ocorrências do sistema</p>
         </div>
-        <Button className="bg-orange-600 hover:bg-orange-700 text-white">
+        <Button 
+          className="bg-orange-600 hover:bg-orange-700 text-white"
+          onClick={() => navigate('/new-occurrence')}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Nova Ocorrência
         </Button>
@@ -109,7 +119,7 @@ export default function Occurrences() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
+              <TableHead>NIF</TableHead>
               <TableHead>Assunto</TableHead>
               <TableHead>Cliente / CPE</TableHead>
               <TableHead>Estado</TableHead>
@@ -120,7 +130,7 @@ export default function Occurrences() {
           <TableBody>
             {filteredOccurrences.map((occurrence) => (
               <TableRow key={occurrence.id} className="hover:bg-muted/50">
-                <TableCell className="font-medium">{occurrence.id}</TableCell>
+                <TableCell className="font-medium">{occurrence.nif}</TableCell>
                 <TableCell className="font-medium">{occurrence.subject}</TableCell>
                 <TableCell className="text-sm">
                   <div>
