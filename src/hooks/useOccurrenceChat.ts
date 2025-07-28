@@ -28,17 +28,8 @@ export function useOccurrenceChat(ocorrenciaId: string) {
   // Carregar mensagens do chat (simuladas por enquanto)
   const loadMessages = async () => {
     try {
-      // Por enquanto vamos usar dados mock até termos tabelas específicas para ocorrências
-      const mockMessages = [
-        {
-          id: '1',
-          conteudo: 'Chat iniciado para esta ocorrência. Pode enviar mensagens e anexar documentos PDF.',
-          remetente: 'system' as const,
-          created_at: new Date().toISOString(),
-          autor_id: 'system'
-        }
-      ]
-      setMessages(mockMessages)
+      // Não adicionar mensagem inicial automaticamente
+      setMessages([])
     } catch (error) {
       console.error('Erro ao carregar mensagens:', error)
     }

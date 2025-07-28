@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Home, Send, Paperclip, CheckCircle, Clock, AlertCircle, XCircle, Download } from "lucide-react"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Home, Send, Paperclip, CheckCircle, Clock, AlertCircle, XCircle, Download, FileText } from "lucide-react"
 import { useOccurrenceChat } from "@/hooks/useOccurrenceChat"
 
 // Mock data - in real app this would come from API
@@ -136,11 +137,17 @@ const OccurrenceDetails = () => {
   const navigate = useNavigate()
   const [message, setMessage] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
   
   const { messages, documents, loading, sendMessage, uploadDocument, getDocumentUrl } = useOccurrenceChat(occurrenceId || "")
 
   const occurrence = occurrenceId ? occurrencesData[occurrenceId as keyof typeof occurrencesData] : null
   const [currentStatus, setCurrentStatus] = useState(occurrence?.status || "Em Análise")
+
+  // Auto scroll para o final das mensagens
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   if (!occurrence) {
     return (
@@ -174,6 +181,10 @@ const OccurrenceDetails = () => {
     const file = e.target.files?.[0]
     if (file) {
       await uploadDocument(file)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
     }
   }
 
@@ -278,108 +289,102 @@ const OccurrenceDetails = () => {
         </div>
       </div>
 
-      {/* Chat Messages */}
-      <Card className="flex-1">
-        <CardContent className="p-6">
-          <div className="space-y-4 min-h-[400px] max-h-[600px] overflow-y-auto">
+      {/* Chat Messages - Clean Design like Requests */}
+      <Card className="flex-1 flex flex-col">
+        <CardContent className="flex-1 flex flex-col p-0">
+          {/* Messages */}
+          <ScrollArea className="flex-1 p-4 min-h-[400px] max-h-[600px]">
             {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <div className="text-center py-4">
+                <p className="text-muted-foreground">A carregar mensagens...</p>
               </div>
             ) : (
-              <>
-                {messages.map((msg, index) => (
+              <div className="space-y-4">
+                {messages.map((message) => (
                   <div
-                    key={msg.id}
-                    className={`p-4 rounded-lg border ${
-                      msg.remetente === 'system' 
-                        ? 'bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-800' 
-                        : msg.remetente === 'user'
-                        ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800 ml-8'
-                        : 'bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800 mr-8'
-                    }`}
+                    key={message.id}
+                    className={`flex ${message.remetente === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        {msg.remetente === 'system' ? 'Sistema' : msg.remetente === 'user' ? 'Você' : 'Suporte'}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(msg.created_at).toLocaleString('pt-PT')}
-                      </span>
+                    <div
+                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        message.remetente === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      <p className="text-sm">{message.conteudo}</p>
+                      <p className="text-xs opacity-70 mt-1">
+                        {new Date(message.created_at).toLocaleTimeString()}
+                      </p>
                     </div>
-                    <div className="text-sm">{msg.conteudo}</div>
                   </div>
                 ))}
                 
-                {/* Documents */}
+                {/* Exibir documentos anexados */}
                 {documents.map((doc) => (
-                  <div key={doc.id} className="p-4 rounded-lg border bg-gray-50 dark:bg-gray-900/50 ml-8">
-                    <div className="flex items-center justify-between">
+                  <div key={doc.id} className="flex justify-end">
+                    <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-primary text-primary-foreground">
                       <div className="flex items-center gap-2">
-                        <Paperclip className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">{doc.nome_arquivo}</span>
-                        <span className="text-xs text-muted-foreground">
-                          ({(doc.tamanho_arquivo || 0 / 1024 / 1024).toFixed(2)} MB)
-                        </span>
+                        <FileText className="h-4 w-4" />
+                        <span className="text-sm">{doc.nome_arquivo}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => window.open(getDocumentUrl(doc.caminho_arquivo), '_blank')}
+                        >
+                          <Download className="h-3 w-3" />
+                        </Button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.open(getDocumentUrl(doc.caminho_arquivo), '_blank')}
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      Anexado em {new Date(doc.created_at).toLocaleString('pt-PT')}
+                      <p className="text-xs opacity-70 mt-1">
+                        {new Date(doc.created_at).toLocaleTimeString()}
+                      </p>
                     </div>
                   </div>
                 ))}
-              </>
+                
+                <div ref={messagesEndRef} />
+              </div>
             )}
+          </ScrollArea>
+
+          {/* Message Input - Clean Design */}
+          <div className="p-4 border-t">
+            <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleFileUpload}
+                disabled={currentStatus === "Resolvido" || currentStatus === "Cancelado"}
+              >
+                <Paperclip className="h-4 w-4" />
+              </Button>
+              <Input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Digite sua mensagem..."
+                className="flex-1"
+                disabled={currentStatus === "Resolvido" || currentStatus === "Cancelado"}
+              />
+              <Button 
+                type="submit" 
+                size="icon"
+                disabled={!message.trim() || currentStatus === "Resolvido" || currentStatus === "Cancelado"}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
           </div>
         </CardContent>
       </Card>
-
-      {/* Message Input */}
-      <div className="space-y-4">
-        <div className="flex gap-2">
-          <Input
-            placeholder="Escreva uma nova mensagem aqui"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="flex-1"
-            disabled={currentStatus === "Resolvido" || currentStatus === "Cancelado"}
-          />
-          <Button 
-            className="bg-orange-600 hover:bg-orange-700 text-white px-6"
-            onClick={handleSendMessage}
-            disabled={!message.trim() || currentStatus === "Resolvido" || currentStatus === "Cancelado"}
-          >
-            <Send className="h-4 w-4 mr-2" />
-            ENVIAR
-          </Button>
-        </div>
-        
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          accept=".pdf"
-          className="hidden"
-        />
-        
-        <Button 
-          variant="outline" 
-          className="text-orange-600 border-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
-          onClick={handleFileUpload}
-          disabled={currentStatus === "Resolvido" || currentStatus === "Cancelado"}
-        >
-          <Paperclip className="h-4 w-4 mr-2" />
-          ENVIAR FICHEIRO PDF
-        </Button>
-      </div>
     </div>
   )
 }
