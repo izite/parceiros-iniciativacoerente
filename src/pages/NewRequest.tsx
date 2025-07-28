@@ -18,17 +18,27 @@ import portulogosLogo from "@/assets/portulugos-logo.svg"
 import alfaLogo from "@/assets/alfa-logo.svg"
 import capwattLogo from "@/assets/capwatt-logo.svg"
 import nabaliaLogo from "@/assets/nabalia-logo.svg"
+import agoraluzLogo from "@/assets/agoraluz-logo.svg"
+import ezuEnergiaLogo from "@/assets/ezu-energia-logo.svg"
+import zugPowerLogo from "@/assets/zug-power-logo.svg"
+import yesEnergyLogo from "@/assets/yes-energy-logo.svg"
+import audaxLogo from "@/assets/audax-logo.svg"
 
 const suppliers = [
-  { name: "Galp", logo: galpLogo },
   { name: "EDP", logo: edpLogo },
+  { name: "Galp", logo: galpLogo },
   { name: "Endesa", logo: endesaLogo },
   { name: "Iberdrola", logo: iberdrolaLogo },
   { name: "Plenitude", logo: plenitudeLogo },
   { name: "PortulogoS", logo: portulogosLogo },
-  { name: "ALFA", logo: alfaLogo },
+  { name: "ALFA Energia", logo: alfaLogo },
   { name: "Capwatt", logo: capwattLogo },
   { name: "Nabalia", logo: nabaliaLogo },
+  { name: "AgoraLuz", logo: agoraluzLogo },
+  { name: "EZU Energia", logo: ezuEnergiaLogo },
+  { name: "ZUG Power", logo: zugPowerLogo },
+  { name: "YES Energy", logo: yesEnergyLogo },
+  { name: "AUDAX", logo: audaxLogo },
 ]
 
 export default function NewRequest() {
