@@ -6,16 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ChevronLeft, CalendarIcon, Home } from "lucide-react"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
+import { ChevronLeft, Home } from "lucide-react"
 
 const AddUser = () => {
   const navigate = useNavigate()
   const { addUser } = useUsers()
-  const [date, setDate] = useState<Date>()
   const [formData, setFormData] = useState({
     estado: "Activo",
     nome: "",
@@ -39,8 +34,7 @@ const AddUser = () => {
       email: formData.email,
       telefone: formData.telemovel,
       empresa: formData.empresa,
-      estado: formData.estado,
-      dataNascimento: date
+      estado: formData.estado
     })
     
     navigate("/users")
@@ -76,7 +70,7 @@ const AddUser = () => {
         <CardHeader>
           <CardTitle className="text-lg">Dados Pessoais</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Estado, Nome, Email, Telemóvel, Data Nascimento
+            Estado, Nome, Email, Telemóvel, Empresa
           </p>
         </CardHeader>
         <CardContent>
@@ -147,36 +141,16 @@ const AddUser = () => {
               />
             </div>
 
-            {/* Data Nascimento */}
-            <div className="space-y-2">
-              <Label>DATA NASCIMENTO</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "dd-MM-yyyy") : <span>DD-MM-AAAA</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
             {/* Submit Button */}
-            <div className="flex justify-end pt-6">
+            <div className="flex justify-end gap-4 pt-6">
+              <Button 
+                type="button" 
+                variant="outline"
+                onClick={() => navigate("/users")}
+                className="px-8"
+              >
+                CANCELAR
+              </Button>
               <Button 
                 type="submit" 
                 className="bg-orange-500 hover:bg-orange-600 text-white px-8"
