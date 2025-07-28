@@ -43,7 +43,9 @@ export function UsersProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      const mappedUsers: AppUser[] = data.map(user => ({
+      console.log('Fetched users from DB:', data) // Debug log
+
+      const mappedUsers: AppUser[] = (data || []).map(user => ({
         id: user.id,
         nome: user.nome || '',
         email: user.email,
@@ -54,6 +56,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
         parceiro_id: user.parceiro_id || ''
       }))
 
+      console.log('Setting users state to:', mappedUsers) // Debug log
       setUsers(mappedUsers)
     } catch (error) {
       console.error('Error fetching users:', error)
