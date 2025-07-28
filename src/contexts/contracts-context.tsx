@@ -59,12 +59,28 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
 
   const addContract = async (newContract: Omit<Contract, 'id'>) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      console.log('Starting contract creation...')
+      
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      
+      if (authError) {
+        console.error('Auth error:', authError)
+        throw new Error('Erro de autenticação')
+      }
+      
+      if (!user) {
+        console.error('No user found')
+        throw new Error('Utilizador não autenticado')
+      }
+      
+      console.log('Authenticated user:', user.id)
       
       const contractData = {
         ...newContract,
-        autor_id: user?.id
+        autor_id: user.id
       }
+      
+      console.log('Contract data to insert:', contractData)
 
       const { data, error } = await supabase
         .from('contratos')
@@ -72,14 +88,14 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
         .select()
 
       if (error) {
-        console.error('Error adding contract:', error)
+        console.error('Database error:', error)
         throw error
       }
 
       console.log('Contract added successfully:', data)
       await fetchContracts()
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error in addContract:', error)
       throw error
     }
   }
