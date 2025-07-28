@@ -241,7 +241,6 @@ const OccurrenceDetails = () => {
         <div className="flex items-center gap-4">
           {getStatusBadge(currentStatus)}
           <span className="text-sm text-muted-foreground">{occurrence.priority}</span>
-          <span className="text-sm text-muted-foreground">{occurrence.lastUpdate}</span>
         </div>
       </div>
 

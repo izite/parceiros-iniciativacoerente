@@ -232,6 +232,39 @@ export type Database = {
           },
         ]
       }
+      documentos_chat_ocorrencias: {
+        Row: {
+          autor_id: string
+          caminho_arquivo: string
+          created_at: string
+          id: string
+          nome_arquivo: string
+          ocorrencia_id: string
+          tamanho_arquivo: number | null
+          tipo_arquivo: string
+        }
+        Insert: {
+          autor_id: string
+          caminho_arquivo: string
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          ocorrencia_id: string
+          tamanho_arquivo?: number | null
+          tipo_arquivo: string
+        }
+        Update: {
+          autor_id?: string
+          caminho_arquivo?: string
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          ocorrencia_id?: string
+          tamanho_arquivo?: number | null
+          tipo_arquivo?: string
+        }
+        Relationships: []
+      }
       mensagens_chat: {
         Row: {
           autor_id: string
@@ -266,6 +299,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mensagens_chat_ocorrencias: {
+        Row: {
+          autor_id: string
+          conteudo: string
+          created_at: string
+          id: string
+          ocorrencia_id: string
+          remetente: string
+        }
+        Insert: {
+          autor_id: string
+          conteudo: string
+          created_at?: string
+          id?: string
+          ocorrencia_id: string
+          remetente: string
+        }
+        Update: {
+          autor_id?: string
+          conteudo?: string
+          created_at?: string
+          id?: string
+          ocorrencia_id?: string
+          remetente?: string
+        }
+        Relationships: []
       }
       ocorrencias: {
         Row: {

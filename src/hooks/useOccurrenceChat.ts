@@ -25,20 +25,41 @@ export function useOccurrenceChat(ocorrenciaId: string) {
   const [documents, setDocuments] = useState<OccurrenceChatDocument[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Carregar mensagens do chat (simuladas por enquanto)
+  // Carregar mensagens do chat
   const loadMessages = async () => {
     try {
-      // Não adicionar mensagem inicial automaticamente
-      setMessages([])
+      const { data, error } = await supabase
+        .from('mensagens_chat_ocorrencias')
+        .select('*')
+        .eq('ocorrencia_id', ocorrenciaId)
+        .order('created_at', { ascending: true })
+
+      if (error) {
+        console.error('Erro ao carregar mensagens:', error)
+        return
+      }
+
+      setMessages((data || []) as OccurrenceChatMessage[])
     } catch (error) {
       console.error('Erro ao carregar mensagens:', error)
     }
   }
 
-  // Carregar documentos do chat (simulados por enquanto)
+  // Carregar documentos do chat
   const loadDocuments = async () => {
     try {
-      setDocuments([])
+      const { data, error } = await supabase
+        .from('documentos_chat_ocorrencias')
+        .select('*')
+        .eq('ocorrencia_id', ocorrenciaId)
+        .order('created_at', { ascending: true })
+
+      if (error) {
+        console.error('Erro ao carregar documentos:', error)
+        return
+      }
+
+      setDocuments(data || [])
     } catch (error) {
       console.error('Erro ao carregar documentos:', error)
     }
@@ -57,6 +78,20 @@ export function useOccurrenceChat(ocorrenciaId: string) {
     }
   }, [ocorrenciaId])
 
+  // Adicionar mensagem inicial do sistema se não existirem mensagens
+  useEffect(() => {
+    const addInitialMessage = async () => {
+      if (messages.length === 0 && !loading) {
+        await sendMessage(
+          'Chat iniciado para esta ocorrência. Pode enviar mensagens e anexar documentos PDF.',
+          'system'
+        )
+      }
+    }
+
+    addInitialMessage()
+  }, [messages.length, loading])
+
   // Enviar mensagem
   const sendMessage = async (conteudo: string, remetente: 'user' | 'system' = 'user') => {
     try {
@@ -67,22 +102,32 @@ export function useOccurrenceChat(ocorrenciaId: string) {
         return
       }
 
-      // Por enquanto simular envio de mensagem
-      const newMessage: OccurrenceChatMessage = {
-        id: Date.now().toString(),
-        conteudo,
-        remetente,
-        created_at: new Date().toISOString(),
-        autor_id: user.id
+      const { data, error } = await supabase
+        .from('mensagens_chat_ocorrencias')
+        .insert({
+          ocorrencia_id: ocorrenciaId,
+          conteudo,
+          remetente,
+          autor_id: user.id
+        })
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Erro ao enviar mensagem:', error)
+        toast.error('Erro ao enviar mensagem')
+        return
       }
 
-      setMessages(prev => [...prev, newMessage])
-      
-      // Simular resposta do sistema se for mensagem do utilizador
-      if (remetente === 'user') {
-        setTimeout(() => {
-          sendSystemResponse()
-        }, 1000)
+      if (data) {
+        setMessages(prev => [...prev, data as OccurrenceChatMessage])
+        
+        // Simular resposta do sistema se for mensagem do utilizador
+        if (remetente === 'user') {
+          setTimeout(() => {
+            sendSystemResponse()
+          }, 1000)
+        }
       }
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
@@ -129,22 +174,33 @@ export function useOccurrenceChat(ocorrenciaId: string) {
         return
       }
 
-      // Simular salvamento na base de dados
-      const newDocument: OccurrenceChatDocument = {
-        id: Date.now().toString(),
-        nome_arquivo: file.name,
-        caminho_arquivo: uploadData.path,
-        tipo_arquivo: file.type,
-        tamanho_arquivo: file.size,
-        created_at: new Date().toISOString(),
-        autor_id: user.id
+      // Salvar referência na base de dados
+      const { data, error } = await supabase
+        .from('documentos_chat_ocorrencias')
+        .insert({
+          ocorrencia_id: ocorrenciaId,
+          nome_arquivo: file.name,
+          caminho_arquivo: uploadData.path,
+          tipo_arquivo: file.type,
+          tamanho_arquivo: file.size,
+          autor_id: user.id
+        })
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Erro ao salvar documento:', error)
+        toast.error('Erro ao salvar documento')
+        return
       }
 
-      setDocuments(prev => [...prev, newDocument])
-      
-      // Adicionar mensagem informando sobre o upload
-      await sendMessage(`Documento anexado: ${file.name}`)
-      toast.success('Documento anexado com sucesso')
+      if (data) {
+        setDocuments(prev => [...prev, data])
+        
+        // Adicionar mensagem informando sobre o upload
+        await sendMessage(`Documento anexado: ${file.name}`)
+        toast.success('Documento anexado com sucesso')
+      }
     } catch (error) {
       console.error('Erro ao fazer upload:', error)
       toast.error('Erro ao fazer upload do documento')
