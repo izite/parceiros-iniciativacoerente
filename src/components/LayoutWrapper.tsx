@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
+import UserDropdown from "@/components/user-dropdown"
 import ProtectedRoute from "@/components/ProtectedRoute"
 
 interface LayoutWrapperProps {
@@ -15,7 +16,10 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => (
         <div className="flex-1 flex flex-col">
           <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
             <SidebarTrigger />
-            <ThemeToggle />
+            <div className="flex items-center gap-4">
+              <UserDropdown />
+              <ThemeToggle />
+            </div>
           </header>
           <main className="flex-1 p-6">
             {children}
