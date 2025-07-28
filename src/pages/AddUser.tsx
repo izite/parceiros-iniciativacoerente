@@ -70,6 +70,7 @@ const AddUser = () => {
       })
       navigate("/users")
     } catch (error) {
+      // Error is already handled in the context with toast
       console.error('Error creating user:', error)
     }
   }

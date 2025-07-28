@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 
 export type AppUser = {
   id: string
@@ -24,6 +25,7 @@ const UsersContext = createContext<UsersContextType | undefined>(undefined)
 
 export function UsersProvider({ children }: { children: ReactNode }) {
   const [users, setUsers] = useState<AppUser[]>([])
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchUsers()
@@ -76,7 +78,20 @@ export function UsersProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Error creating user:', error)
-        return
+        if (error.code === '23505') {
+          toast({
+            title: "Erro",
+            description: "Já existe um utilizador com este email.",
+            variant: "destructive"
+          })
+        } else {
+          toast({
+            title: "Erro",
+            description: "Erro ao criar utilizador.",
+            variant: "destructive"
+          })
+        }
+        throw error
       }
 
       if (data && data[0]) {
@@ -91,9 +106,14 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           parceiro_id: data[0].parceiro_id || ''
         }
         setUsers(prev => [newUser, ...prev])
+        toast({
+          title: "Sucesso",
+          description: "Utilizador criado com sucesso."
+        })
       }
     } catch (error) {
       console.error('Error creating user:', error)
+      // Error already handled above
     }
   }
 
@@ -105,7 +125,9 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           nome: userData.nome,
           telefone: userData.telefone,
           empresa: userData.empresa,
-          estado: userData.estado
+          estado: userData.estado,
+          perfil: userData.perfil,
+          parceiro_id: userData.parceiro_id
         })
         .eq('id', id)
         .select()
@@ -122,7 +144,9 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           email: data[0].email,
           telefone: data[0].telefone || '',
           empresa: data[0].empresa || '',
-          estado: data[0].estado || 'Ativo'
+          estado: data[0].estado || 'Ativo',
+          perfil: data[0].perfil || '',
+          parceiro_id: data[0].parceiro_id || ''
         }
         setUsers(prev => prev.map(user => 
           user.id === id ? updatedUser : user
