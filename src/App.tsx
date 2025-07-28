@@ -28,6 +28,7 @@ import Users from "./pages/Users";
 import AddUser from "./pages/AddUser";
 import EditUser from "./pages/EditUser";
 import AddContact from "./pages/AddContact";
+import Contacts from "./pages/Contacts";
 import Drive from "./pages/Drive";
 import NotFound from "./pages/NotFound";
 
@@ -74,7 +75,7 @@ const App = () => (
                       <ThemeToggle />
                     </header>
                     <main className="flex-1 p-6">
-                      <Dashboard />
+                      <Contacts />
                     </main>
                   </div>
                 </div>
