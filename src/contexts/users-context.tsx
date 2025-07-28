@@ -89,14 +89,58 @@ export function UsersProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const updateUser = (id: string, userData: Partial<AppUser>) => {
-    setUsers(prev => prev.map(user => 
-      user.id === id ? { ...user, ...userData } : user
-    ))
+  const updateUser = async (id: string, userData: Partial<AppUser>) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .update({
+          nome: userData.nome,
+          telefone: userData.telefone,
+          empresa: userData.empresa,
+          estado: userData.estado
+        })
+        .eq('id', id)
+        .select()
+
+      if (error) {
+        console.error('Error updating user:', error)
+        return
+      }
+
+      if (data && data[0]) {
+        const updatedUser: AppUser = {
+          id: data[0].id,
+          nome: data[0].nome || '',
+          email: data[0].email,
+          telefone: data[0].telefone || '',
+          empresa: data[0].empresa || '',
+          estado: data[0].estado || 'Ativo'
+        }
+        setUsers(prev => prev.map(user => 
+          user.id === id ? updatedUser : user
+        ))
+      }
+    } catch (error) {
+      console.error('Error updating user:', error)
+    }
   }
 
-  const deleteUser = (id: string) => {
-    setUsers(prev => prev.filter(user => user.id !== id))
+  const deleteUser = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', id)
+
+      if (error) {
+        console.error('Error deleting user:', error)
+        return
+      }
+
+      setUsers(prev => prev.filter(user => user.id !== id))
+    } catch (error) {
+      console.error('Error deleting user:', error)
+    }
   }
 
   const getUserById = (id: string) => {
