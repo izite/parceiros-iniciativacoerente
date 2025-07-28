@@ -20,6 +20,51 @@ interface ChatMessage {
   }
 }
 
+const getStatusBorderColor = (status?: string) => {
+  switch (status?.toLowerCase()) {
+    case "aberto": return "border-green-500/20"
+    case "fechado": return "border-red-500/20"
+    case "análise": 
+    case "analise": return "border-yellow-500/20"
+    case "pendente": return "border-blue-500/20"
+    default: 
+      if (status?.toLowerCase().includes("pendente")) {
+        return "border-blue-500/20"
+      }
+      return "border-green-500/20" // Default para aberto
+  }
+}
+
+const getStatusDotColor = (status?: string) => {
+  switch (status?.toLowerCase()) {
+    case "aberto": return "bg-green-500"
+    case "fechado": return "bg-red-500"
+    case "análise": 
+    case "analise": return "bg-yellow-500"
+    case "pendente": return "bg-blue-500"
+    default: 
+      if (status?.toLowerCase().includes("pendente")) {
+        return "bg-blue-500"
+      }
+      return "bg-green-500" // Default para aberto
+  }
+}
+
+const getStatusTextColor = (status?: string) => {
+  switch (status?.toLowerCase()) {
+    case "aberto": return "text-green-500"
+    case "fechado": return "text-red-500"
+    case "análise": 
+    case "analise": return "text-yellow-500"
+    case "pendente": return "text-blue-500"
+    default: 
+      if (status?.toLowerCase().includes("pendente")) {
+        return "text-blue-500"
+      }
+      return "text-green-500" // Default para aberto
+  }
+}
+
 export default function RequestChat() {
   const { requestId } = useParams()
   const navigate = useNavigate()
@@ -137,62 +182,16 @@ export default function RequestChat() {
         </div>
       </div>
 
-      {/* Status Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {/* Aberto - Verde */}
-        <Card className="border-green-500/20">
+      {/* Estado do Pedido Individual */}
+      <div className="mb-6">
+        <Card className={`${getStatusBorderColor(request.estado)} max-w-xs`}>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <div className={`w-4 h-4 rounded-full ${getStatusDotColor(request.estado)}`}></div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">ABERTO</p>
-                <p className="text-2xl font-bold text-green-500">
-                  {requests.filter(r => r.estado?.toLowerCase() === 'aberto').length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Fechado - Vermelho */}
-        <Card className="border-red-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">FECHADO</p>
-                <p className="text-2xl font-bold text-red-500">
-                  {requests.filter(r => r.estado?.toLowerCase() === 'fechado').length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Análise - Amarelo */}
-        <Card className="border-yellow-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">ANÁLISE</p>
-                <p className="text-2xl font-bold text-yellow-500">
-                  {requests.filter(r => r.estado?.toLowerCase() === 'análise' || r.estado?.toLowerCase() === 'analise').length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Pendente - Azul */}
-        <Card className="border-blue-500/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">PENDENTE</p>
-                <p className="text-2xl font-bold text-blue-500">
-                  {requests.filter(r => r.estado?.toLowerCase().includes('pendente')).length}
+                <p className="text-sm font-medium text-muted-foreground">ESTADO DO PEDIDO</p>
+                <p className={`text-xl font-bold ${getStatusTextColor(request.estado)}`}>
+                  {request.estado?.toUpperCase() || 'ABERTO'}
                 </p>
               </div>
             </div>
