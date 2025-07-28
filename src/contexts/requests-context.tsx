@@ -18,6 +18,7 @@ export interface Request {
 interface RequestsContextType {
   requests: Request[]
   addRequest: (request: Omit<Request, 'id' | 'data' | 'timeAgo' | 'estado'>) => void
+  updateRequestStatus: (requestId: string, newStatus: string) => void
 }
 
 const RequestsContext = createContext<RequestsContextType | undefined>(undefined)
@@ -37,8 +38,18 @@ export function RequestsProvider({ children }: { children: ReactNode }) {
     setRequests(prev => [newRequest, ...prev])
   }
 
+  const updateRequestStatus = (requestId: string, newStatus: string) => {
+    setRequests(prev => 
+      prev.map(request => 
+        request.id === requestId 
+          ? { ...request, estado: newStatus }
+          : request
+      )
+    )
+  }
+
   return (
-    <RequestsContext.Provider value={{ requests, addRequest }}>
+    <RequestsContext.Provider value={{ requests, addRequest, updateRequestStatus }}>
       {children}
     </RequestsContext.Provider>
   )

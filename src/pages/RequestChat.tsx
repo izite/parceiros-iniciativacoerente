@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ArrowLeft, Send, Paperclip, FileText } from "lucide-react"
 import { useRequests } from "@/contexts/requests-context"
@@ -68,7 +69,7 @@ const getStatusTextColor = (status?: string) => {
 export default function RequestChat() {
   const { requestId } = useParams()
   const navigate = useNavigate()
-  const { requests } = useRequests()
+  const { requests, updateRequestStatus } = useRequests()
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -82,6 +83,7 @@ export default function RequestChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const request = requests.find(r => r.id === requestId)
+  const [selectedStatus, setSelectedStatus] = useState(request?.estado || "Aberto")
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -160,6 +162,13 @@ export default function RequestChat() {
     }
   }
 
+  const handleSaveStatus = () => {
+    if (request && updateRequestStatus) {
+      updateRequestStatus(request.id, selectedStatus)
+      toast.success("Estado do pedido atualizado com sucesso!")
+    }
+  }
+
   return (
     <div className="p-6 h-screen flex flex-col">
       {/* Header */}
@@ -184,15 +193,52 @@ export default function RequestChat() {
 
       {/* Estado do Pedido Individual */}
       <div className="mb-6">
-        <Card className={`${getStatusBorderColor(request.estado)} max-w-xs`}>
+        <Card className={`${getStatusBorderColor(selectedStatus)} max-w-md`}>
           <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className={`w-4 h-4 rounded-full ${getStatusDotColor(request.estado)}`}></div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">ESTADO DO PEDIDO</p>
-                <p className={`text-xl font-bold ${getStatusTextColor(request.estado)}`}>
-                  {request.estado?.toUpperCase() || 'ABERTO'}
-                </p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className={`w-4 h-4 rounded-full ${getStatusDotColor(selectedStatus)}`}></div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">ESTADO DO PEDIDO</p>
+                  <p className={`text-xl font-bold ${getStatusTextColor(selectedStatus)}`}>
+                    {selectedStatus?.toUpperCase()}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Alterar Estado:</label>
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione o estado" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border shadow-lg z-50">
+                    <SelectItem value="Aberto" className="cursor-pointer hover:bg-accent">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        Aberto
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="Fechado" className="cursor-pointer hover:bg-accent">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                        Fechado
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="Análise" className="cursor-pointer hover:bg-accent">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        Análise
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="Pendente" className="cursor-pointer hover:bg-accent">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                        Pendente
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>
@@ -268,6 +314,17 @@ export default function RequestChat() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Botão Guardar */}
+      <div className="mt-6 flex justify-end">
+        <Button 
+          onClick={handleSaveStatus}
+          className="bg-orange-600 hover:bg-orange-700 text-white px-8"
+          disabled={selectedStatus === request.estado}
+        >
+          Guardar Estado
+        </Button>
+      </div>
     </div>
   )
 }
