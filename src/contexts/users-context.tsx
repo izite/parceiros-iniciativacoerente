@@ -74,7 +74,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           empresa: user.empresa,
           estado: user.estado,
           perfil: user.perfil,
-          parceiro_id: user.parceiro_id,
+          parceiro_id: user.parceiro_id || null, // Corrigir string vazia para null
           tipo: 'utilizador'
         }])
         .select()
@@ -130,7 +130,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
           empresa: userData.empresa,
           estado: userData.estado,
           perfil: userData.perfil,
-          parceiro_id: userData.parceiro_id
+          parceiro_id: userData.parceiro_id || null // Corrigir string vazia para null
         })
         .eq('id', id)
         .select()

@@ -97,7 +97,7 @@ export default function Drive() {
         .insert({
           nome_arquivo: newFolderName.trim(),
           caminho_arquivo: folderPath,
-          criado_por: user.id
+          criado_por: user?.id || null // Garantir que não é string vazia
         })
 
       if (error) throw error
@@ -144,7 +144,7 @@ export default function Drive() {
           .insert({
             nome_arquivo: file.name,
             caminho_arquivo: filePath,
-            criado_por: user.id
+            criado_por: user?.id || null // Garantir que não é string vazia
           })
 
         if (dbError) throw dbError
