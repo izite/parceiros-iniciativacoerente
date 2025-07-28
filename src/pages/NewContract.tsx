@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useContracts } from "@/contexts/contracts-context"
+import { useUser } from "@/contexts/user-context"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +20,7 @@ const NewContract = () => {
   const navigate = useNavigate()
   const { addContract } = useContracts()
   const { toast } = useToast()
+  const { user } = useUser()
   
   const [formData, setFormData] = useState({
     nif: "",
@@ -49,7 +51,13 @@ const NewContract = () => {
     alteracaoTitular: false,
     dataRenunciaContrato: undefined as Date | undefined,
     observacoesContrato: "",
-    pdfFiles: [] as File[]
+    pdfFiles: [] as File[],
+    // Novos campos
+    estado: "Pendente",
+    inicioFornecimento: undefined as Date | undefined,
+    consumo: "",
+    comissao: "",
+    subUtilizador: user?.email || ""
   })
 
   const handleInputChange = (field: string, value: any) => {
@@ -79,14 +87,15 @@ const NewContract = () => {
       const newContract = {
         nif: formData.nif,
         cliente_nome: formData.nome,
-        estado: "Pendente",
-        inicio_fornecimento: formData.dataRenunciaContrato ? format(formData.dataRenunciaContrato, "yyyy-MM-dd") : null,
-        consumo: parseFloat(formData.potenciaContratada) || 0,
-        comissao: 0,
+        estado: formData.estado,
+        inicio_fornecimento: formData.inicioFornecimento ? format(formData.inicioFornecimento, "yyyy-MM-dd") : null,
+        consumo: parseFloat(formData.consumo) || 0,
+        comissao: parseFloat(formData.comissao) || 0,
         fornecedor: formData.fornecedor,
         cpe_cui: formData.cpe,
         tipo_energia: formData.tipo || "electricidade",
-        notas: formData.observacoesContrato
+        notas: formData.observacoesContrato,
+        sub_utilizador: formData.subUtilizador
       }
 
       console.log("Dados do contrato:", newContract)
@@ -490,6 +499,64 @@ const NewContract = () => {
                   value={formData.campanha}
                   onChange={(e) => handleInputChange("campanha", e.target.value)}
                   placeholder="Pesquise por uma campanha..."
+                />
+              </div>
+            </div>
+
+            {/* Novos campos solicitados */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="estado">ESTADO</Label>
+                <Select value={formData.estado} onValueChange={(value) => handleInputChange("estado", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="—" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Activo">Activo</SelectItem>
+                    <SelectItem value="Pendente">Pendente</SelectItem>
+                    <SelectItem value="Tramitacao">Tramitação</SelectItem>
+                    <SelectItem value="Baixa">Baixa</SelectItem>
+                    <SelectItem value="Enviado BO">Enviado BO</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="inicioFornecimento">INICIO FORN.</Label>
+                <DatePicker
+                  date={formData.inicioFornecimento}
+                  onDateChange={(date) => handleInputChange("inicioFornecimento", date)}
+                  placeholder="Selecionar data"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="consumo">CONSUMO</Label>
+                <Input
+                  id="consumo"
+                  type="number"
+                  value={formData.consumo}
+                  onChange={(e) => handleInputChange("consumo", e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="comissao">COMISSÃO</Label>
+                <Input
+                  id="comissao"
+                  type="number"
+                  step="0.01"
+                  value={formData.comissao}
+                  onChange={(e) => handleInputChange("comissao", e.target.value)}
+                  placeholder="0.00"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="subUtilizador">SUB-UTILIZADOR</Label>
+                <Input
+                  id="subUtilizador"
+                  value={formData.subUtilizador}
+                  onChange={(e) => handleInputChange("subUtilizador", e.target.value)}
+                  placeholder="Nome do utilizador"
+                  readOnly
                 />
               </div>
             </div>
