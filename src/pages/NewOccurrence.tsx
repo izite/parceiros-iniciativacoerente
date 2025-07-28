@@ -35,6 +35,18 @@ const NewOccurrence = () => {
         return
       }
 
+      // Verificar se o utilizador existe na tabela users
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .single()
+
+      if (userError || !userData) {
+        toast.error('Perfil de utilizador não encontrado. Contacte o administrador.')
+        return
+      }
+
       const { data, error } = await supabase
         .from('ocorrencias')
         .insert({
@@ -43,8 +55,8 @@ const NewOccurrence = () => {
           cliente_nome: formData.cliente_nome,
           cpe_cui: formData.cpe_cui,
           estado: formData.estado,
-          autor_id: user.id,
-          criado_por: user.id
+          autor_id: userData.id,
+          criado_por: userData.id
         })
         .select()
         .single()
