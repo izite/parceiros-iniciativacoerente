@@ -137,6 +137,69 @@ export default function RequestChat() {
         </div>
       </div>
 
+      {/* Status Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {/* Aberto - Verde */}
+        <Card className="border-green-500/20">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">ABERTO</p>
+                <p className="text-2xl font-bold text-green-500">
+                  {requests.filter(r => r.estado?.toLowerCase() === 'aberto').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Fechado - Vermelho */}
+        <Card className="border-red-500/20">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">FECHADO</p>
+                <p className="text-2xl font-bold text-red-500">
+                  {requests.filter(r => r.estado?.toLowerCase() === 'fechado').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Análise - Amarelo */}
+        <Card className="border-yellow-500/20">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">ANÁLISE</p>
+                <p className="text-2xl font-bold text-yellow-500">
+                  {requests.filter(r => r.estado?.toLowerCase() === 'análise' || r.estado?.toLowerCase() === 'analise').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pendente - Azul */}
+        <Card className="border-blue-500/20">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">PENDENTE</p>
+                <p className="text-2xl font-bold text-blue-500">
+                  {requests.filter(r => r.estado?.toLowerCase().includes('pendente')).length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Chat Container */}
       <Card className="flex-1 flex flex-col">
         <CardHeader>
