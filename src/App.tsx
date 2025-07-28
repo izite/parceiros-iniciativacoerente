@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { AuthProvider } from "@/contexts/auth-context";
 import { UserProvider } from "@/contexts/user-context";
 import { UsersProvider } from "@/contexts/users-context";
 import { ContractsProvider } from "@/contexts/contracts-context";
@@ -35,7 +36,8 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark" storageKey="crm-ui-theme">
-      <UserProvider>
+      <AuthProvider>
+        <UserProvider>
         <UsersProvider>
           <ContractsProvider>
             <ContactsProvider>
@@ -325,6 +327,7 @@ const App = () => (
           </ContractsProvider>
         </UsersProvider>
       </UserProvider>
+      </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
