@@ -8,16 +8,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
+// Import logos
+import galpLogo from "@/assets/galp-logo.svg"
+import edpLogo from "@/assets/edp-logo.svg"
+import endesaLogo from "@/assets/endesa-logo.svg"
+import iberdrolaLogo from "@/assets/iberdrola-logo.svg"
+import plenitudeLogo from "@/assets/plenitude-logo.svg"
+import portulogosLogo from "@/assets/portulugos-logo.svg"
+import alfaLogo from "@/assets/alfa-logo.svg"
+import capwattLogo from "@/assets/capwatt-logo.svg"
+import nabaliaLogo from "@/assets/nabalia-logo.svg"
+
 const suppliers = [
-  { name: "Galp", logo: "🛢️" },
-  { name: "EDP", logo: "⚡" },
-  { name: "Endesa", logo: "🔋" },
-  { name: "Iberdrola", logo: "🌊" },
-  { name: "Plenitude", logo: "🌱" },
-  { name: "Yes", logo: "✨" },
-  { name: "PortulogoS", logo: "🇵🇹" },
-  { name: "ÁgoraLuz", logo: "💡" },
-  { name: "Capwatt", logo: "⚡" },
+  { name: "Galp", logo: galpLogo },
+  { name: "EDP", logo: edpLogo },
+  { name: "Endesa", logo: endesaLogo },
+  { name: "Iberdrola", logo: iberdrolaLogo },
+  { name: "Plenitude", logo: plenitudeLogo },
+  { name: "PortulogoS", logo: portulogosLogo },
+  { name: "ALFA", logo: alfaLogo },
+  { name: "Capwatt", logo: capwattLogo },
+  { name: "Nabalia", logo: nabaliaLogo },
 ]
 
 export default function NewRequest() {
@@ -180,7 +191,11 @@ export default function NewRequest() {
                         }
                       `}
                     >
-                      <div className="text-2xl">{supplier.logo}</div>
+                      <img 
+                        src={supplier.logo} 
+                        alt={`${supplier.name} logo`}
+                        className="w-12 h-6 object-contain"
+                      />
                       <span className="text-sm font-medium">{supplier.name}</span>
                     </div>
                   ))}
