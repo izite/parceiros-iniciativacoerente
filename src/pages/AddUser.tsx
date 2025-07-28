@@ -195,8 +195,8 @@ const AddUser = () => {
               />
             </div>
 
-            {/* Parceiro ID - só aparece se nível for comercial */}
-            {inputs.nivel === "comercial" && (
+            {/* Parceiro ID - aparece se nível for comercial ou parceiro */}
+            {(inputs.nivel === "comercial" || inputs.nivel === "parceiro") && (
               <div className="space-y-2">
                 <Label htmlFor="parceiro_id">PARCEIRO</Label>
                 <Select value={inputs.parceiro_id} onValueChange={(value) => handleInputChange("parceiro_id", value)}>
