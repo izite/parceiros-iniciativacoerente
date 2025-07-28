@@ -50,7 +50,7 @@ export type Database = {
         Row: {
           created_at: string | null
           created_by: string | null
-          criado_por: string
+          criado_por: string | null
           email: string | null
           empresa: string | null
           id: string
@@ -61,7 +61,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           created_by?: string | null
-          criado_por: string
+          criado_por?: string | null
           email?: string | null
           empresa?: string | null
           id?: string
@@ -72,7 +72,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           created_by?: string | null
-          criado_por?: string
+          criado_por?: string | null
           email?: string | null
           empresa?: string | null
           id?: string
@@ -84,13 +84,6 @@ export type Database = {
           {
             foreignKeyName: "contactos_created_by_fkey"
             columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contactos_criado_por_fkey"
-            columns: ["criado_por"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
