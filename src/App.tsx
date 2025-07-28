@@ -3,10 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import LayoutWrapper from "@/components/LayoutWrapper";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { AuthProvider } from "@/contexts/auth-context";
 import { UserProvider } from "@/contexts/user-context";
 import { UsersProvider } from "@/contexts/users-context";
@@ -46,232 +44,22 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/login" element={<Auth />} />
-            <Route path="/home" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <Home />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/contacts" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <Contacts />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/contracts" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <Contracts />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/contracts/new" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <NewContract />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/requests" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <Requests />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/requests/:requestId" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <RequestDetails />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/requests/new" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <NewRequest />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/occurrences" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <Occurrences />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/occurrences/:occurrenceId" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <OccurrenceDetails />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/users" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <Users />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/users/add" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <AddUser />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/users/edit/:id" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <EditUser />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/drive" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <Drive />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="*" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <NotFound />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
+            <Route path="/home" element={<LayoutWrapper><Home /></LayoutWrapper>} />
+            <Route path="/contacts" element={<LayoutWrapper><Contacts /></LayoutWrapper>} />
+            <Route path="/contracts" element={<LayoutWrapper><Contracts /></LayoutWrapper>} />
+            <Route path="/contracts/new" element={<LayoutWrapper><NewContract /></LayoutWrapper>} />
+            <Route path="/requests" element={<LayoutWrapper><Requests /></LayoutWrapper>} />
+            <Route path="/requests/:requestId" element={<LayoutWrapper><RequestDetails /></LayoutWrapper>} />
+            <Route path="/requests/new" element={<LayoutWrapper><NewRequest /></LayoutWrapper>} />
+            <Route path="/occurrences" element={<LayoutWrapper><Occurrences /></LayoutWrapper>} />
+            <Route path="/occurrences/:occurrenceId" element={<LayoutWrapper><OccurrenceDetails /></LayoutWrapper>} />
+            <Route path="/users" element={<LayoutWrapper><Users /></LayoutWrapper>} />
+            <Route path="/users/add" element={<LayoutWrapper><AddUser /></LayoutWrapper>} />
+            <Route path="/users/edit/:id" element={<LayoutWrapper><EditUser /></LayoutWrapper>} />
+            <Route path="/drive" element={<LayoutWrapper><Drive /></LayoutWrapper>} />
+            <Route path="*" element={<LayoutWrapper><NotFound /></LayoutWrapper>} />
           </Routes>
         </BrowserRouter>
               </TooltipProvider>
