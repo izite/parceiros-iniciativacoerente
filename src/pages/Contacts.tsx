@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -7,13 +8,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useContacts } from "@/contexts/contacts-context"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { Plus, Phone, Mail, User } from "lucide-react"
+import { Plus, Phone, Mail, User, ChevronRight } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 export default function Contacts() {
   const { contacts, loading, addContact } = useContacts()
   const { user } = useAuth()
+  const navigate = useNavigate()
   const { toast } = useToast()
   const [open, setOpen] = useState(false)
   const [nome, setNome] = useState("")
@@ -180,6 +182,14 @@ export default function Contacts() {
                       <span className="text-sm">{contact.telefone}</span>
                     </div>
                   </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => navigate(`/add-contact?edit=${contact.id}`)}
+                    className="ml-2"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
               ))}
             </div>
