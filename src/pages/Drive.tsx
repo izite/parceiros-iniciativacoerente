@@ -65,6 +65,23 @@ export default function Drive() {
       setLoading(false)
     }
   }
+
+  // Função para encontrar o utilizador local pelo email do utilizador autenticado
+  const getLocalUserId = async () => {
+    if (!user?.email) return null
+    
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', user.email)
+        .single()
+      
+      return error ? null : data?.id
+    } catch {
+      return null
+    }
+  }
   
   const getCurrentPath = (): FileItem[] => {
     const path: FileItem[] = []
@@ -92,12 +109,14 @@ export default function Drive() {
       : newFolderName.trim()
 
     try {
+      const localUserId = await getLocalUserId()
+      
       const { error } = await supabase
         .from('arquivos')
         .insert({
           nome_arquivo: newFolderName.trim(),
           caminho_arquivo: folderPath,
-          criado_por: user?.id || null // Garantir que não é string vazia
+          criado_por: localUserId
         })
 
       if (error) throw error
@@ -139,12 +158,14 @@ export default function Drive() {
         if (uploadError) throw uploadError
 
         // Registar na base de dados
+        const localUserId = await getLocalUserId()
+        
         const { error: dbError } = await supabase
           .from('arquivos')
           .insert({
             nome_arquivo: file.name,
             caminho_arquivo: filePath,
-            criado_por: user?.id || null // Garantir que não é string vazia
+            criado_por: localUserId
           })
 
         if (dbError) throw dbError
