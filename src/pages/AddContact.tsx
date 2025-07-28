@@ -58,7 +58,7 @@ export default function AddContact() {
       })
     }
 
-    navigate("/customers")
+    navigate("/contacts")
   }
 
   const handleDelete = () => {
@@ -68,14 +68,14 @@ export default function AddContact() {
         title: "Contacto eliminado",
         description: "O contacto foi eliminado com sucesso."
       })
-      navigate("/customers")
+      navigate("/contacts")
     }
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={() => navigate("/customers")} size="sm">
+        <Button variant="outline" onClick={() => navigate("/contacts")} size="sm">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
@@ -147,7 +147,7 @@ export default function AddContact() {
               <Button type="submit" className="flex-1">
                 {editId ? "Atualizar Contacto" : "Criar Contacto"}
               </Button>
-              <Button type="button" variant="outline" onClick={() => navigate("/customers")}>
+              <Button type="button" variant="outline" onClick={() => navigate("/contacts")}>
                 Cancelar
               </Button>
               {editId && (

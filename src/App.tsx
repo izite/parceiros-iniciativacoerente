@@ -23,7 +23,7 @@ import RequestDetails from "./pages/RequestDetails";
 import NewRequest from "./pages/NewRequest";
 import Occurrences from "./pages/Occurrences";
 import OccurrenceDetails from "./pages/OccurrenceDetails";
-import Customers from "./pages/Customers";
+
 import Users from "./pages/Users";
 import AddUser from "./pages/AddUser";
 import EditUser from "./pages/EditUser";
@@ -203,22 +203,6 @@ const App = () => (
                     </header>
                     <main className="flex-1 p-6">
                       <OccurrenceDetails />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/customers" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <Customers />
                     </main>
                   </div>
                 </div>
