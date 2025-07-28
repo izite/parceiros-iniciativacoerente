@@ -191,6 +191,82 @@ export type Database = {
           },
         ]
       }
+      documentos_chat: {
+        Row: {
+          autor_id: string
+          caminho_arquivo: string
+          created_at: string
+          id: string
+          nome_arquivo: string
+          pedido_id: string
+          tamanho_arquivo: number | null
+          tipo_arquivo: string
+        }
+        Insert: {
+          autor_id: string
+          caminho_arquivo: string
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          pedido_id: string
+          tamanho_arquivo?: number | null
+          tipo_arquivo: string
+        }
+        Update: {
+          autor_id?: string
+          caminho_arquivo?: string
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          pedido_id?: string
+          tamanho_arquivo?: number | null
+          tipo_arquivo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_chat_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mensagens_chat: {
+        Row: {
+          autor_id: string
+          conteudo: string
+          created_at: string
+          id: string
+          pedido_id: string
+          remetente: string
+        }
+        Insert: {
+          autor_id: string
+          conteudo: string
+          created_at?: string
+          id?: string
+          pedido_id: string
+          remetente: string
+        }
+        Update: {
+          autor_id?: string
+          conteudo?: string
+          created_at?: string
+          id?: string
+          pedido_id?: string
+          remetente?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_chat_pedido_id_fkey"
+            columns: ["pedido_id"]
+            isOneToOne: false
+            referencedRelation: "pedidos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ocorrencias: {
         Row: {
           assunto: string

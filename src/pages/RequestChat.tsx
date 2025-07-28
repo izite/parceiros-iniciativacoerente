@@ -5,21 +5,11 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ArrowLeft, Send, Paperclip, FileText } from "lucide-react"
+import { ArrowLeft, Send, Paperclip, FileText, Download } from "lucide-react"
 import { useRequests } from "@/contexts/requests-context"
+import { useRequestChat } from "@/hooks/useRequestChat"
 import { toast } from "sonner"
 
-interface ChatMessage {
-  id: string
-  content: string
-  sender: "user" | "system"
-  timestamp: Date
-  file?: {
-    name: string
-    url: string
-    type: string
-  }
-}
 
 const getStatusBorderColor = (status?: string) => {
   switch (status?.toLowerCase()) {
@@ -70,20 +60,22 @@ export default function RequestChat() {
   const { requestId } = useParams()
   const navigate = useNavigate()
   const { requests, updateRequestStatus } = useRequests()
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "1",
-      content: "Chat iniciado para este pedido. Pode enviar mensagens e anexar documentos PDF.",
-      sender: "system",
-      timestamp: new Date()
-    }
-  ])
   const [newMessage, setNewMessage] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const request = requests.find(r => r.id === requestId)
   const [selectedStatus, setSelectedStatus] = useState(request?.estado || "Aberto")
+  
+  // Usar o hook de chat
+  const { 
+    messages, 
+    documents, 
+    loading: chatLoading, 
+    sendMessage, 
+    uploadDocument, 
+    getDocumentUrl 
+  } = useRequestChat(requestId || '')
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -106,55 +98,19 @@ export default function RequestChat() {
     )
   }
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newMessage.trim()) return
 
-    const message: ChatMessage = {
-      id: Date.now().toString(),
-      content: newMessage,
-      sender: "user",
-      timestamp: new Date()
-    }
-
-    setMessages(prev => [...prev, message])
+    await sendMessage(newMessage)
     setNewMessage("")
-    
-    // Simulate system response
-    setTimeout(() => {
-      const systemResponse: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        content: "Mensagem recebida. Como posso ajudar com este pedido?",
-        sender: "system",
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, systemResponse])
-    }, 1000)
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    if (file.type !== "application/pdf") {
-      toast.error("Apenas ficheiros PDF são permitidos")
-      return
-    }
-
-    const fileMessage: ChatMessage = {
-      id: Date.now().toString(),
-      content: `Documento anexado: ${file.name}`,
-      sender: "user",
-      timestamp: new Date(),
-      file: {
-        name: file.name,
-        url: URL.createObjectURL(file),
-        type: file.type
-      }
-    }
-
-    setMessages(prev => [...prev, fileMessage])
-    toast.success("Documento anexado com sucesso")
+    await uploadDocument(file)
     
     // Reset file input
     if (fileInputRef.current) {
@@ -252,34 +208,58 @@ export default function RequestChat() {
         <CardContent className="flex-1 flex flex-col p-0">
           {/* Messages */}
           <ScrollArea className="flex-1 p-4">
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
-                >
+            {chatLoading ? (
+              <div className="text-center py-4">
+                <p className="text-muted-foreground">A carregar mensagens...</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {messages.map((message) => (
                   <div
-                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                      message.sender === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }`}
+                    key={message.id}
+                    className={`flex ${message.remetente === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    <p className="text-sm">{message.content}</p>
-                    {message.file && (
-                      <div className="mt-2 p-2 bg-background/20 rounded flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
-                        <span className="text-xs">{message.file.name}</span>
-                      </div>
-                    )}
-                    <p className="text-xs opacity-70 mt-1">
-                      {message.timestamp.toLocaleTimeString()}
-                    </p>
+                    <div
+                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        message.remetente === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      <p className="text-sm">{message.conteudo}</p>
+                      <p className="text-xs opacity-70 mt-1">
+                        {new Date(message.created_at).toLocaleTimeString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
+                ))}
+                
+                {/* Exibir documentos anexados */}
+                {documents.map((doc) => (
+                  <div key={doc.id} className="flex justify-end">
+                    <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-primary text-primary-foreground">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        <span className="text-sm">{doc.nome_arquivo}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => window.open(getDocumentUrl(doc.caminho_arquivo), '_blank')}
+                        >
+                          <Download className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <p className="text-xs opacity-70 mt-1">
+                        {new Date(doc.created_at).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                
+                <div ref={messagesEndRef} />
+              </div>
+            )}
           </ScrollArea>
 
           {/* Message Input */}
