@@ -68,15 +68,10 @@ const NewContract = () => {
     inicioFornecimento: undefined as Date | undefined,
     consumo: "",
     comissao: "",
-    subUtilizador: ""
+    // Removido campo subUtilizador
   })
 
-  // Atualizar o subUtilizador quando o currentUser estiver disponível
-  useEffect(() => {
-    if (currentUser) {
-      setFormData(prev => ({ ...prev, subUtilizador: currentUser }))
-    }
-  }, [currentUser])
+  // Removido o useEffect para subUtilizador
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -129,7 +124,7 @@ const NewContract = () => {
         cpe_cui: formData.cpe,
         tipo_energia: formData.tipo || "electricidade",
         notas: formData.observacoesContrato,
-        sub_utilizador: formData.subUtilizador || user.email
+        sub_utilizador: currentUser || user.email
       }
 
       console.log("📋 Dados do contrato a inserir:", newContract)
@@ -539,7 +534,7 @@ const NewContract = () => {
             </div>
 
             {/* Novos campos solicitados */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="estado">ESTADO</Label>
                 <Select value={formData.estado} onValueChange={(value) => handleInputChange("estado", value)}>
@@ -575,24 +570,19 @@ const NewContract = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="comissao">COMISSÃO</Label>
-                <Input
-                  id="comissao"
-                  type="number"
-                  step="0.01"
-                  value={formData.comissao}
-                  onChange={(e) => handleInputChange("comissao", e.target.value)}
-                  placeholder="0.00"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="subUtilizador">SUB-UTILIZADOR</Label>
-                <Input
-                  id="subUtilizador"
-                  value={formData.subUtilizador}
-                  onChange={(e) => handleInputChange("subUtilizador", e.target.value)}
-                  placeholder="Nome do utilizador"
-                  readOnly
-                />
+                <div className="flex">
+                  <Input
+                    id="comissao"
+                    type="number"
+                    step="0.01"
+                    value={formData.comissao}
+                    onChange={(e) => handleInputChange("comissao", e.target.value)}
+                    placeholder="0.00"
+                  />
+                  <span className="flex items-center px-3 bg-muted text-muted-foreground text-sm border border-l-0 rounded-r-md">
+                    €
+                  </span>
+                </div>
               </div>
             </div>
 
