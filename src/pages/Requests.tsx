@@ -8,35 +8,7 @@ import { Search, ChevronLeft, Plus, ChevronRight } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 
-const requests = [
-  {
-    id: "220001",
-    assunto: "OUTROS",
-    estado: "Fechado",
-    subUtilizador: "João Silva",
-    data: "16-07-2025",
-    timeAgo: "há 7 horas",
-    fornecedor: "galp"
-  },
-  {
-    id: "220002", 
-    assunto: "OUTROS",
-    estado: "Pendente (Fornecedor)",
-    subUtilizador: "Maria Santos",
-    data: "18-07-2025",
-    timeAgo: "há 1 dia",
-    fornecedor: "EDP"
-  },
-  {
-    id: "220003",
-    assunto: "PEDIDO DE FATURAS",
-    estado: "Fechado",
-    subUtilizador: "Carlos Mendes",
-    data: "17-07-2025",
-    timeAgo: "há 6 dias",
-    fornecedor: "galp"
-  }
-]
+const requests: any[] = []
 
 
 const getStatusColor = (status: string) => {
@@ -93,20 +65,6 @@ const Requests = () => {
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-w-md">
-        {/* Pedidos em Curso */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              PEDIDOS EM CURSO
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">{pedidosEmCurso}</div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Search Bar */}
       <div className="flex items-center gap-2">
@@ -131,6 +89,7 @@ const Requests = () => {
               <TableRow className="border-b">
                 <TableHead className="text-muted-foreground font-medium">ID</TableHead>
                 <TableHead className="text-muted-foreground font-medium">ASSUNTO</TableHead>
+                <TableHead className="text-muted-foreground font-medium">NOME/NIF</TableHead>
                 <TableHead className="text-muted-foreground font-medium">ESTADO</TableHead>
                 <TableHead className="text-muted-foreground font-medium">SUB-UTILIZADOR</TableHead>
                 <TableHead className="text-muted-foreground font-medium">DATA</TableHead>
@@ -146,6 +105,12 @@ const Requests = () => {
                       <span className="text-xs bg-muted px-2 py-1 rounded">
                         {request.assunto}
                       </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <div className="font-medium">{request.cliente_nome}</div>
+                      <div className="text-xs text-muted-foreground">{request.cliente_nif}</div>
                     </div>
                   </TableCell>
                   <TableCell>
