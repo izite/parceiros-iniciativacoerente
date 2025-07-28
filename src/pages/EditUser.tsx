@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, Home } from "lucide-react"
+import { ChevronLeft, Home, Trash2 } from "lucide-react"
 
 const EditUser = () => {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-  const { getUserById, updateUser } = useUsers()
+  const { getUserById, updateUser, deleteUser } = useUsers()
   const [formData, setFormData] = useState({
     estado: "Activo",
     nome: "",
@@ -56,6 +56,13 @@ const EditUser = () => {
     }
     
     navigate("/users")
+  }
+
+  const handleDeleteUser = async () => {
+    if (id && window.confirm("Tem certeza que deseja apagar este utilizador?")) {
+      await deleteUser(id)
+      navigate("/users")
+    }
   }
 
   return (
@@ -164,6 +171,15 @@ const EditUser = () => {
                 className="px-8"
               >
                 CANCELAR
+              </Button>
+              <Button 
+                type="button" 
+                variant="destructive"
+                onClick={handleDeleteUser}
+                className="px-8"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                APAGAR UTILIZADOR
               </Button>
               <Button 
                 type="submit" 
