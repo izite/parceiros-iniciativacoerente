@@ -97,38 +97,6 @@ const App = () => (
                 </div>
               </SidebarProvider>
             } />
-            <Route path="/contracts/add" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <AddContract />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
-            <Route path="/contracts/details/:contractId" element={
-              <SidebarProvider defaultOpen={true}>
-                <div className="min-h-screen flex w-full">
-                  <AppSidebar />
-                  <div className="flex-1 flex flex-col">
-                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
-                      <SidebarTrigger />
-                      <ThemeToggle />
-                    </header>
-                    <main className="flex-1 p-6">
-                      <ContractDetails />
-                    </main>
-                  </div>
-                </div>
-              </SidebarProvider>
-            } />
             <Route path="/requests" element={
               <SidebarProvider defaultOpen={true}>
                 <div className="min-h-screen flex w-full">
