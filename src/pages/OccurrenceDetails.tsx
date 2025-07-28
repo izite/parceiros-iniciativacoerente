@@ -139,7 +139,9 @@ const OccurrenceDetails = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
-  const { messages, documents, loading, sendMessage, uploadDocument, getDocumentUrl } = useOccurrenceChat(occurrenceId || "")
+  // Only use chat for real UUIDs, not mock data
+  const isValidUUID = occurrenceId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(occurrenceId)
+  const { messages, documents, loading, sendMessage, uploadDocument, getDocumentUrl } = useOccurrenceChat(isValidUUID ? occurrenceId : "")
 
   const occurrence = occurrenceId ? occurrencesData[occurrenceId as keyof typeof occurrencesData] : null
   const [currentStatus, setCurrentStatus] = useState(occurrence?.status || "Em Análise")
