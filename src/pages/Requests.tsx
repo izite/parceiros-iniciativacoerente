@@ -14,17 +14,31 @@ import { useRequests } from "@/contexts/requests-context"
 
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
-    case "fechado": return "bg-success text-success-foreground"
-    case "pendente (fornecedor)": return "bg-muted text-muted-foreground"
-    default: return "bg-secondary text-secondary-foreground"
+    case "aberto": return "bg-green-500/10 text-green-500 border-green-500/20"
+    case "fechado": return "bg-red-500/10 text-red-500 border-red-500/20"
+    case "análise": 
+    case "analise": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+    case "pendente": return "bg-blue-500/10 text-blue-500 border-blue-500/20"
+    default: 
+      if (status.toLowerCase().includes("pendente")) {
+        return "bg-blue-500/10 text-blue-500 border-blue-500/20"
+      }
+      return "bg-secondary text-secondary-foreground"
   }
 }
 
 const getStatusDot = (status: string) => {
   switch (status.toLowerCase()) {
-    case "fechado": return "bg-success"
-    case "pendente (fornecedor)": return "bg-muted-foreground"
-    default: return "bg-secondary"
+    case "aberto": return "bg-green-500"
+    case "fechado": return "bg-red-500"
+    case "análise": 
+    case "analise": return "bg-yellow-500"
+    case "pendente": return "bg-blue-500"
+    default: 
+      if (status.toLowerCase().includes("pendente")) {
+        return "bg-blue-500"
+      }
+      return "bg-secondary"
   }
 }
 
@@ -64,7 +78,70 @@ const Requests = () => {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-semibold">Pedidos</h1>
-        </div>
+      </div>
+
+      {/* Status Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {/* Aberto - Verde */}
+        <Card className="border-green-500/20">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">ABERTO</p>
+                <p className="text-2xl font-bold text-green-500">
+                  {requests.filter(r => r.estado?.toLowerCase() === 'aberto').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Fechado - Vermelho */}
+        <Card className="border-red-500/20">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">FECHADO</p>
+                <p className="text-2xl font-bold text-red-500">
+                  {requests.filter(r => r.estado?.toLowerCase() === 'fechado').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Análise - Amarelo */}
+        <Card className="border-yellow-500/20">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">ANÁLISE</p>
+                <p className="text-2xl font-bold text-yellow-500">
+                  {requests.filter(r => r.estado?.toLowerCase() === 'análise' || r.estado?.toLowerCase() === 'analise').length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pendente - Azul */}
+        <Card className="border-blue-500/20">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">PENDENTE</p>
+                <p className="text-2xl font-bold text-blue-500">
+                  {requests.filter(r => r.estado?.toLowerCase().includes('pendente')).length}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
         <Button 
           className="bg-orange-600 hover:bg-orange-700 text-white"
           onClick={() => navigate("/requests/new")}
