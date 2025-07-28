@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -7,8 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Search, ChevronLeft, Plus, ChevronRight } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
+import { useRequests } from "@/contexts/requests-context"
 
-const requests: any[] = []
+// const requests: any[] = []
 
 
 const getStatusColor = (status: string) => {
@@ -29,6 +30,7 @@ const getStatusDot = (status: string) => {
 
 const Requests = () => {
   const navigate = useNavigate()
+  const { requests } = useRequests()
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredRequests, setFilteredRequests] = useState(requests)
 
@@ -36,10 +38,17 @@ const Requests = () => {
     setSearchTerm(value)
     const filtered = requests.filter(request =>
       request.assunto.toLowerCase().includes(value.toLowerCase()) ||
-      request.id.toLowerCase().includes(value.toLowerCase())
+      request.id.toLowerCase().includes(value.toLowerCase()) ||
+      request.cliente_nome.toLowerCase().includes(value.toLowerCase()) ||
+      request.cliente_nif.includes(value)
     )
     setFilteredRequests(filtered)
   }
+
+  // Update filtered requests when requests change
+  React.useEffect(() => {
+    handleSearch(searchTerm)
+  }, [requests, searchTerm])
 
   const pedidosEmCurso = requests.filter(r => 
     r.estado.toLowerCase().includes("aberto") || 

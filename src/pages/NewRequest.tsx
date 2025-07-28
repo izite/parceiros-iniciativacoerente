@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useRequests } from "@/contexts/requests-context"
+import { toast } from "sonner"
 
 // Import logos
 import galpLogo from "@/assets/galp-logo.png"
@@ -43,6 +45,7 @@ const suppliers = [
 
 export default function NewRequest() {
   const navigate = useNavigate()
+  const { addRequest } = useRequests()
   const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([])
   const [formData, setFormData] = useState({
     category: "",
@@ -63,8 +66,31 @@ export default function NewRequest() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log({ ...formData, suppliers: selectedSuppliers })
+    
+    // Validação básica
+    if (!formData.category || !formData.subject || !formData.clientNif || !formData.clientName || !formData.message) {
+      toast.error("Por favor, preencha todos os campos obrigatórios")
+      return
+    }
+    
+    if (selectedSuppliers.length === 0) {
+      toast.error("Por favor, selecione pelo menos um fornecedor")
+      return
+    }
+    
+    // Criar o pedido
+    addRequest({
+      assunto: formData.subject,
+      cliente_nome: formData.clientName,
+      cliente_nif: formData.clientNif,
+      subUtilizador: "Utilizador Atual",
+      categoria: formData.category,
+      prioridade: formData.priority,
+      mensagem: formData.message,
+      fornecedores: selectedSuppliers
+    })
+    
+    toast.success("Pedido criado com sucesso!")
     navigate("/requests")
   }
 

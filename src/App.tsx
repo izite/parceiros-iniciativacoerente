@@ -10,6 +10,7 @@ import { UserProvider } from "@/contexts/user-context";
 import { UsersProvider } from "@/contexts/users-context";
 import { ContractsProvider } from "@/contexts/contracts-context";
 import { ContactsProvider } from "@/contexts/contacts-context";
+import { RequestsProvider } from "@/contexts/requests-context";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
@@ -39,6 +40,7 @@ const App = () => (
         <UsersProvider>
           <ContractsProvider>
             <ContactsProvider>
+              <RequestsProvider>
               <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -63,6 +65,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
               </TooltipProvider>
+              </RequestsProvider>
             </ContactsProvider>
           </ContractsProvider>
         </UsersProvider>
