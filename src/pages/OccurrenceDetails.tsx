@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { Home, Send, Paperclip, CheckCircle, Clock, AlertCircle, XCircle } from "lucide-react"
+import { Home, Send, Paperclip, CheckCircle, Clock, AlertCircle, XCircle, Download } from "lucide-react"
+import { useOccurrenceChat } from "@/hooks/useOccurrenceChat"
 
 // Mock data - in real app this would come from API
 const occurrencesData = {
@@ -134,6 +135,9 @@ const OccurrenceDetails = () => {
   const { occurrenceId } = useParams<{ occurrenceId: string }>()
   const navigate = useNavigate()
   const [message, setMessage] = useState("")
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  const { messages, documents, loading, sendMessage, uploadDocument, getDocumentUrl } = useOccurrenceChat(occurrenceId || "")
 
   const occurrence = occurrenceId ? occurrencesData[occurrenceId as keyof typeof occurrencesData] : null
   const [currentStatus, setCurrentStatus] = useState(occurrence?.status || "Em Análise")
@@ -149,10 +153,9 @@ const OccurrenceDetails = () => {
     )
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message.trim()) {
-      // In real app, this would send message to API
-      console.log("Sending message:", message)
+      await sendMessage(message)
       setMessage("")
     }
   }
@@ -161,6 +164,17 @@ const OccurrenceDetails = () => {
     setCurrentStatus(newStatus)
     // In real app, this would update the status via API
     console.log("Status changed to:", newStatus)
+  }
+
+  const handleFileUpload = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      await uploadDocument(file)
+    }
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -220,102 +234,108 @@ const OccurrenceDetails = () => {
         </div>
       </div>
 
-      {/* Contract Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <h3 className="font-medium text-sm text-muted-foreground">ID / FORN.</h3>
-              <div className="text-sm">
-                <div className="font-medium">{occurrence.id}</div>
-                <div className="text-muted-foreground">{occurrence.supplier}</div>
-              </div>
+      {/* Client Info - Simplified and Beautiful */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-6 rounded-xl border">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Cliente */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Cliente</h3>
+            <p className="text-lg font-semibold text-foreground">{occurrence.client}</p>
+          </div>
+          
+          {/* NIF */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">NIF</h3>
+            <p className="text-lg font-mono text-foreground">123456789</p>
+          </div>
+          
+          {/* Ponto */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Ponto</h3>
+            <div className="flex items-center gap-3">
+              {occurrence.point === 'MT' && (
+                <Badge variant="destructive" className="text-xs font-medium">MT</Badge>
+              )}
+              <span className="text-sm font-mono text-muted-foreground">{occurrence.cpe}</span>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <h3 className="font-medium text-sm text-muted-foreground">CLIENTE</h3>
-              <div className="text-sm font-medium">{occurrence.client}</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <h3 className="font-medium text-sm text-muted-foreground">PONTO</h3>
-              <div className="flex items-center gap-2">
-                {occurrence.point === 'MT' && (
-                  <Badge variant="destructive" className="text-xs">MT</Badge>
-                )}
-                <span className="text-sm">{occurrence.cpe}</span>
-              </div>
-              <div className="text-xs text-orange-600">{occurrence.consumption} ⓘ</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <h3 className="font-medium text-sm text-muted-foreground">INÍCIO FORN.</h3>
-              <div className="text-sm">{occurrence.startDate}</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <h3 className="font-medium text-sm text-muted-foreground">ESTADO</h3>
+          </div>
+        </div>
+        
+        {/* Estado do Contrato */}
+        <div className="mt-6 pt-4 border-t border-border">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Estado do Contrato</h3>
               <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
                 {occurrence.contractStatus}
               </Badge>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <h3 className="font-medium text-sm text-muted-foreground">MOTIVO</h3>
-              <div className="text-sm">{occurrence.subject}</div>
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Motivo da Ocorrência</p>
+              <p className="text-sm font-medium">{occurrence.subject}</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Chat Messages */}
       <Card className="flex-1">
         <CardContent className="p-6">
-          <div className="space-y-4 min-h-[400px]">
-            {occurrence.messages.map((msg, index) => (
-              <div
-                key={msg.id}
-                className={`p-4 rounded-lg border ${getMessageStyle(msg.type, index)}`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-muted-foreground">{msg.user}</span>
-                  <span className="text-xs text-muted-foreground">{msg.timestamp}</span>
-                </div>
-                <div className="text-sm">{msg.content}</div>
+          <div className="space-y-4 min-h-[400px] max-h-[600px] overflow-y-auto">
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
-            ))}
-            
-            {/* Final status message */}
-            {currentStatus === "Resolvido" && (
-              <div className="text-center py-4">
-                <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                  Estado alterado para
-                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
-                    Resolvido
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">24-07-2025</div>
-              </div>
+            ) : (
+              <>
+                {messages.map((msg, index) => (
+                  <div
+                    key={msg.id}
+                    className={`p-4 rounded-lg border ${
+                      msg.remetente === 'system' 
+                        ? 'bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-800' 
+                        : msg.remetente === 'user'
+                        ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800 ml-8'
+                        : 'bg-purple-50 border-purple-200 dark:bg-purple-950/20 dark:border-purple-800 mr-8'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {msg.remetente === 'system' ? 'Sistema' : msg.remetente === 'user' ? 'Você' : 'Suporte'}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(msg.created_at).toLocaleString('pt-PT')}
+                      </span>
+                    </div>
+                    <div className="text-sm">{msg.conteudo}</div>
+                  </div>
+                ))}
+                
+                {/* Documents */}
+                {documents.map((doc) => (
+                  <div key={doc.id} className="p-4 rounded-lg border bg-gray-50 dark:bg-gray-900/50 ml-8">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Paperclip className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">{doc.nome_arquivo}</span>
+                        <span className="text-xs text-muted-foreground">
+                          ({(doc.tamanho_arquivo || 0 / 1024 / 1024).toFixed(2)} MB)
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.open(getDocumentUrl(doc.caminho_arquivo), '_blank')}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Anexado em {new Date(doc.created_at).toLocaleString('pt-PT')}
+                    </div>
+                  </div>
+                ))}
+              </>
             )}
           </div>
         </CardContent>
@@ -342,13 +362,22 @@ const OccurrenceDetails = () => {
           </Button>
         </div>
         
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept=".pdf"
+          className="hidden"
+        />
+        
         <Button 
           variant="outline" 
           className="text-orange-600 border-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
+          onClick={handleFileUpload}
           disabled={currentStatus === "Resolvido" || currentStatus === "Cancelado"}
         >
           <Paperclip className="h-4 w-4 mr-2" />
-          ENVIAR FICHEIRO
+          ENVIAR FICHEIRO PDF
         </Button>
       </div>
     </div>
