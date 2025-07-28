@@ -38,7 +38,7 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
   const fetchContracts = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('contratos')
         .select('*')
         .order('created_at', { ascending: false })
@@ -65,7 +65,7 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
         autor_id: user?.id
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contratos')
         .insert([contractData])
 
@@ -82,7 +82,7 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
 
   const updateContract = async (id: string, updates: Partial<Contract>) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contratos')
         .update(updates)
         .eq('id', id)
@@ -100,7 +100,7 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
 
   const deleteContract = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contratos')
         .delete()
         .eq('id', id)

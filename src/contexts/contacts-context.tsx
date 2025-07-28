@@ -31,7 +31,7 @@ export function ContactsProvider({ children }: { children: React.ReactNode }) {
   const fetchContacts = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('contactos')
         .select('*')
         .order('created_at', { ascending: false })
@@ -58,7 +58,7 @@ export function ContactsProvider({ children }: { children: React.ReactNode }) {
         criado_por: user?.id
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contactos')
         .insert([contactData])
 
@@ -75,7 +75,7 @@ export function ContactsProvider({ children }: { children: React.ReactNode }) {
 
   const updateContact = async (id: string, updates: Partial<Contact>) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contactos')
         .update(updates)
         .eq('id', id)
@@ -93,7 +93,7 @@ export function ContactsProvider({ children }: { children: React.ReactNode }) {
 
   const deleteContact = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contactos')
         .delete()
         .eq('id', id)

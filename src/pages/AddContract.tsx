@@ -47,14 +47,14 @@ const AddContract = () => {
     // Criar novo contrato
     const newContract = {
       nif: formData.nif,
-      cliente: formData.nome,
-      ponto: "PT0001234567890123456789999",
+      cliente_nome: formData.nome,
+      cpe_cui: "PT0001234567890123456789999",
       fornecedor: "EDP Comercial", // Padrão, pode ser alterado depois
       estado: "Activo",
-      inicioForn: format(new Date(), "dd/MM/yyyy", { locale: pt }),
-      consumo: "—",
-      comissao: "—",
-      subUtilizador: "—"
+      inicio_fornecimento: format(new Date(), "dd/MM/yyyy", { locale: pt }),
+      consumo: 0,
+      comissao: 0,
+      sub_utilizador: "—"
     }
     
     console.log("Novo contrato criado:", newContract)

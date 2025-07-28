@@ -9,9 +9,9 @@ import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft, Trash2 } from "lucide-react"
 
 export default function AddContact() {
-  const [name, setName] = useState("")
+  const [nome, setNome] = useState("")
   const [email, setEmail] = useState("")
-  const [phone, setPhone] = useState("")
+  const [telefone, setTelefone] = useState("")
   const [empresa, setEmpresa] = useState("")
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -24,18 +24,18 @@ export default function AddContact() {
     if (editId) {
       const contact = getContact(editId)
       if (contact) {
-        setName(contact.name)
-        setEmail(contact.email)
-        setPhone(contact.phone)
-        setEmpresa(contact.empresa)
+        setNome(contact.nome)
+        setEmail(contact.email || "")
+        setTelefone(contact.telefone || "")
+        setEmpresa(contact.empresa || "")
       }
     }
   }, [editId, getContact])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!name || !email || !phone || !empresa) {
+    if (!nome || !email || !telefone || !empresa) {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos.",
@@ -45,20 +45,20 @@ export default function AddContact() {
     }
 
     if (editId) {
-      updateContact(editId, { name, email, phone, empresa })
+      await updateContact(editId, { nome, email, telefone, empresa })
       toast({
         title: "Contacto atualizado",
-        description: `O contacto "${name}" foi atualizado com sucesso.`
+        description: `O contacto "${nome}" foi atualizado com sucesso.`
       })
     } else {
-      addContact({ name, email, phone, empresa })
+      await addContact({ nome, email, telefone, empresa })
       toast({
         title: "Contacto criado",
-        description: `O contacto "${name}" foi criado com sucesso.`
+        description: `O contacto "${nome}" foi criado com sucesso.`
       })
     }
 
-    navigate("/contacts")
+    navigate("/customers")
   }
 
   const handleDelete = () => {
@@ -68,14 +68,14 @@ export default function AddContact() {
         title: "Contacto eliminado",
         description: "O contacto foi eliminado com sucesso."
       })
-      navigate("/contacts")
+      navigate("/customers")
     }
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="outline" onClick={() => navigate("/contacts")} size="sm">
+        <Button variant="outline" onClick={() => navigate("/customers")} size="sm">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
@@ -100,8 +100,8 @@ export default function AddContact() {
                 <Label htmlFor="name">Nome *</Label>
                 <Input
                   id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
                   placeholder="Nome completo"
                   required
                 />
@@ -124,8 +124,8 @@ export default function AddContact() {
                 <Input
                   id="phone"
                   type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  value={telefone}
+                  onChange={(e) => setTelefone(e.target.value)}
                   placeholder="+351 900 000 000"
                   required
                 />
@@ -147,7 +147,7 @@ export default function AddContact() {
               <Button type="submit" className="flex-1">
                 {editId ? "Atualizar Contacto" : "Criar Contacto"}
               </Button>
-              <Button type="button" variant="outline" onClick={() => navigate("/contacts")}>
+              <Button type="button" variant="outline" onClick={() => navigate("/customers")}>
                 Cancelar
               </Button>
               {editId && (
