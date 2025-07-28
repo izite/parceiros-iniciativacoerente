@@ -16,8 +16,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Contracts from "./pages/Contracts";
-import AddContract from "./pages/AddContract";
-import ContractDetails from "./pages/ContractDetails";
+import NewContract from "./pages/NewContract";
 import Requests from "./pages/Requests";
 import RequestDetails from "./pages/RequestDetails";
 import NewRequest from "./pages/NewRequest";
@@ -92,6 +91,22 @@ const App = () => (
                     </header>
                     <main className="flex-1 p-6">
                       <Contracts />
+                    </main>
+                  </div>
+                </div>
+              </SidebarProvider>
+            } />
+            <Route path="/contracts/new" element={
+              <SidebarProvider defaultOpen={true}>
+                <div className="min-h-screen flex w-full">
+                  <AppSidebar />
+                  <div className="flex-1 flex flex-col">
+                    <header className="h-14 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center justify-between px-6">
+                      <SidebarTrigger />
+                      <ThemeToggle />
+                    </header>
+                    <main className="flex-1 p-6">
+                      <NewContract />
                     </main>
                   </div>
                 </div>

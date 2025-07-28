@@ -59,7 +59,7 @@ const Contracts = () => {
         <h1 className="text-2xl font-semibold">Contratos</h1>
         <Button 
           className="ml-auto bg-orange-500 hover:bg-orange-600 text-white"
-          onClick={() => navigate("/contracts/add")}
+          onClick={() => navigate("/contracts/new")}
         >
           NOVO CONTRATO
         </Button>
