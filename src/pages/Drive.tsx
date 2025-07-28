@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,6 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Folder, File, Plus, Upload, Download, Trash2, FolderOpen } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { supabase } from "@/integrations/supabase/client"
+import { useAuth } from "@/contexts/auth-context"
 
 type FileItem = {
   id: string
@@ -14,6 +16,7 @@ type FileItem = {
   size?: number
   createdAt: Date
   parentId?: string
+  path?: string
 }
 
 export default function Drive() {
@@ -21,9 +24,47 @@ export default function Drive() {
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null)
   const [newFolderName, setNewFolderName] = useState("")
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
   const { toast } = useToast()
+  const { user } = useAuth()
 
   const currentItems = items.filter(item => item.parentId === currentFolderId)
+  
+  useEffect(() => {
+    fetchFiles()
+  }, [])
+
+  const fetchFiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('arquivos')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      const fileItems: FileItem[] = data.map(file => ({
+        id: file.id,
+        name: file.nome_arquivo || 'Arquivo sem nome',
+        type: file.caminho_arquivo?.includes('.') ? 'file' : 'folder',
+        createdAt: new Date(file.created_at || ''),
+        parentId: file.caminho_arquivo?.includes('/') ? 
+          file.caminho_arquivo.split('/').slice(0, -1).join('/') || null : null,
+        path: file.caminho_arquivo
+      }))
+
+      setItems(fileItems)
+    } catch (error) {
+      console.error('Erro ao carregar arquivos:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar arquivos",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
   
   const getCurrentPath = (): FileItem[] => {
     const path: FileItem[] = []
@@ -42,46 +83,86 @@ export default function Drive() {
     return path
   }
 
-  const createFolder = () => {
-    if (!newFolderName.trim()) return
+  const createFolder = async () => {
+    if (!newFolderName.trim() || !user) return
 
-    const newFolder: FileItem = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: newFolderName.trim(),
-      type: 'folder',
-      createdAt: new Date(),
-      parentId: currentFolderId
+    const currentPath = getCurrentPath()
+    const folderPath = currentPath.length > 0 
+      ? `${currentPath.map(p => p.name).join('/')}/${newFolderName.trim()}`
+      : newFolderName.trim()
+
+    try {
+      const { error } = await supabase
+        .from('arquivos')
+        .insert({
+          nome_arquivo: newFolderName.trim(),
+          caminho_arquivo: folderPath,
+          criado_por: user.id
+        })
+
+      if (error) throw error
+
+      await fetchFiles()
+      setNewFolderName("")
+      setIsCreateFolderOpen(false)
+      toast({
+        title: "Pasta criada",
+        description: `A pasta "${newFolderName.trim()}" foi criada com sucesso.`
+      })
+    } catch (error) {
+      console.error('Erro ao criar pasta:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao criar pasta",
+        variant: "destructive"
+      })
     }
-
-    setItems(prev => [...prev, newFolder])
-    setNewFolderName("")
-    setIsCreateFolderOpen(false)
-    toast({
-      title: "Pasta criada",
-      description: `A pasta "${newFolder.name}" foi criada com sucesso.`
-    })
   }
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
-    if (!files) return
+    if (!files || !user) return
 
-    Array.from(files).forEach(file => {
-      const newFile: FileItem = {
-        id: Math.random().toString(36).substr(2, 9),
-        name: file.name,
-        type: 'file',
-        size: file.size,
-        createdAt: new Date(),
-        parentId: currentFolderId
+    const currentPath = getCurrentPath()
+    const basePath = currentPath.length > 0 ? currentPath.map(p => p.name).join('/') : ''
+
+    try {
+      for (const file of Array.from(files)) {
+        // Upload para storage
+        const fileName = `${Date.now()}_${file.name}`
+        const filePath = basePath ? `${basePath}/${fileName}` : fileName
+        
+        const { error: uploadError } = await supabase.storage
+          .from('drive')
+          .upload(filePath, file)
+
+        if (uploadError) throw uploadError
+
+        // Registar na base de dados
+        const { error: dbError } = await supabase
+          .from('arquivos')
+          .insert({
+            nome_arquivo: file.name,
+            caminho_arquivo: filePath,
+            criado_por: user.id
+          })
+
+        if (dbError) throw dbError
       }
-      setItems(prev => [...prev, newFile])
-    })
 
-    toast({
-      title: "Ficheiros carregados",
-      description: `${files.length} ficheiro(s) carregado(s) com sucesso.`
-    })
+      await fetchFiles()
+      toast({
+        title: "Ficheiros carregados",
+        description: `${files.length} ficheiro(s) carregado(s) com sucesso.`
+      })
+    } catch (error) {
+      console.error('Erro ao carregar ficheiros:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar ficheiros",
+        variant: "destructive"
+      })
+    }
   }
 
   const openFolder = (folderId: string) => {
@@ -95,12 +176,67 @@ export default function Drive() {
     }
   }
 
-  const deleteItem = (itemId: string) => {
-    setItems(prev => prev.filter(item => item.id !== itemId))
-    toast({
-      title: "Item eliminado",
-      description: "O item foi eliminado com sucesso."
-    })
+  const deleteItem = async (itemId: string) => {
+    try {
+      const item = items.find(i => i.id === itemId)
+      if (!item) return
+
+      // Eliminar do storage se for ficheiro
+      if (item.type === 'file' && item.path) {
+        const { error: storageError } = await supabase.storage
+          .from('drive')
+          .remove([item.path])
+
+        if (storageError) console.error('Erro ao eliminar do storage:', storageError)
+      }
+
+      // Eliminar da base de dados
+      const { error } = await supabase
+        .from('arquivos')
+        .delete()
+        .eq('id', itemId)
+
+      if (error) throw error
+
+      await fetchFiles()
+      toast({
+        title: "Item eliminado",
+        description: "O item foi eliminado com sucesso."
+      })
+    } catch (error) {
+      console.error('Erro ao eliminar item:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao eliminar item",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const downloadFile = async (item: FileItem) => {
+    if (item.type !== 'file' || !item.path) return
+
+    try {
+      const { data, error } = await supabase.storage
+        .from('drive')
+        .download(item.path)
+
+      if (error) throw error
+
+      const url = URL.createObjectURL(data)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = item.name
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Erro ao descarregar ficheiro:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao descarregar ficheiro",
+        variant: "destructive"
+      })
+    }
   }
 
   const formatFileSize = (bytes?: number) => {
@@ -112,13 +248,21 @@ export default function Drive() {
 
   const path = getCurrentPath()
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-lg">A carregar...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Drive</h1>
           <p className="text-muted-foreground">
-            Gerencie os seus ficheiros e pastas
+            Gerencie os seus ficheiros e pastas - Visível para todos os utilizadores
           </p>
         </div>
         
@@ -218,16 +362,30 @@ export default function Drive() {
                     <CardTitle className="text-sm truncate">{item.name}</CardTitle>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    deleteItem(item.id)
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-1">
+                  {item.type === 'file' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        downloadFile(item)
+                      }}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteItem(item.id)
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
