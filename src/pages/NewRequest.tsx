@@ -64,7 +64,7 @@ export default function NewRequest() {
     )
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     // Validação básica
@@ -79,7 +79,7 @@ export default function NewRequest() {
     }
     
     // Criar o pedido
-    addRequest({
+    await addRequest({
       assunto: formData.subject,
       cliente_nome: formData.clientName,
       cliente_nif: formData.clientNif,
@@ -90,7 +90,6 @@ export default function NewRequest() {
       fornecedores: selectedSuppliers
     })
     
-    toast.success("Pedido criado com sucesso!")
     navigate("/requests")
   }
 

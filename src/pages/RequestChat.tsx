@@ -162,10 +162,9 @@ export default function RequestChat() {
     }
   }
 
-  const handleSaveStatus = () => {
+  const handleSaveStatus = async () => {
     if (request && updateRequestStatus) {
-      updateRequestStatus(request.id, selectedStatus)
-      toast.success("Estado do pedido atualizado com sucesso!")
+      await updateRequestStatus(request.id, selectedStatus)
     }
   }
 

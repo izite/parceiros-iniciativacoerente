@@ -262,6 +262,7 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           criado_por: string
+          data_criacao: string | null
           estado: string | null
           fornecedores: string[] | null
           id: string
@@ -278,6 +279,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           criado_por: string
+          data_criacao?: string | null
           estado?: string | null
           fornecedores?: string[] | null
           id?: string
@@ -294,6 +296,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           criado_por?: string
+          data_criacao?: string | null
           estado?: string | null
           fornecedores?: string[] | null
           id?: string

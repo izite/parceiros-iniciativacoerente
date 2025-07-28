@@ -44,7 +44,7 @@ const getStatusDot = (status: string) => {
 
 const Requests = () => {
   const navigate = useNavigate()
-  const { requests } = useRequests()
+  const { requests, loading } = useRequests()
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredRequests, setFilteredRequests] = useState(requests)
 
@@ -170,68 +170,82 @@ const Requests = () => {
       {/* Table */}
       <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b">
-                <TableHead className="text-muted-foreground font-medium">COMERCIALIZADORA</TableHead>
-                <TableHead className="text-muted-foreground font-medium">ASSUNTO</TableHead>
-                <TableHead className="text-muted-foreground font-medium">NOME/NIF</TableHead>
-                <TableHead className="text-muted-foreground font-medium">ESTADO</TableHead>
-                <TableHead className="text-muted-foreground font-medium">SUB-UTILIZADOR</TableHead>
-                <TableHead className="text-muted-foreground font-medium">DATA</TableHead>
-                <TableHead className="w-16"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRequests.map((request) => (
-                <TableRow key={request.id} className="hover:bg-muted/50">
-                  <TableCell className="font-medium">
-                    {request.fornecedores && request.fornecedores.length > 0 
-                      ? request.fornecedores.join(", ") 
-                      : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs bg-muted px-2 py-1 rounded">
-                        {request.assunto}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="font-medium">{request.cliente_nome}</div>
-                      <div className="text-xs text-muted-foreground">{request.cliente_nif}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(request.estado)} variant="secondary">
-                      <div className={`w-2 h-2 rounded-full ${getStatusDot(request.estado)} mr-1`}></div>
-                      {request.estado}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{request.subUtilizador}</span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="font-medium">{request.data}</div>
-                      <div className="text-xs text-muted-foreground">{request.timeAgo}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 w-8 p-0"
-                      onClick={() => navigate(`/requests/${request.id}/chat`)}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+          {loading ? (
+            <div className="p-8 text-center">
+              <p className="text-muted-foreground">A carregar pedidos...</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b">
+                  <TableHead className="text-muted-foreground font-medium">COMERCIALIZADORA</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">ASSUNTO</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">NOME/NIF</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">ESTADO</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">SUB-UTILIZADOR</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">DATA</TableHead>
+                  <TableHead className="w-16"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredRequests.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      {searchTerm ? "Nenhum pedido encontrado com os critérios de pesquisa" : "Nenhum pedido criado ainda"}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredRequests.map((request) => (
+                    <TableRow key={request.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium">
+                        {request.fornecedores && request.fornecedores.length > 0 
+                          ? request.fornecedores.join(", ") 
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs bg-muted px-2 py-1 rounded">
+                            {request.assunto}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="font-medium">{request.cliente_nome}</div>
+                          <div className="text-xs text-muted-foreground">{request.cliente_nif}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(request.estado)} variant="secondary">
+                          <div className={`w-2 h-2 rounded-full ${getStatusDot(request.estado)} mr-1`}></div>
+                          {request.estado}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{request.subUtilizador}</span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="font-medium">{request.data}</div>
+                          <div className="text-xs text-muted-foreground">{request.timeAgo}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0"
+                          onClick={() => navigate(`/requests/${request.id}/chat`)}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 
