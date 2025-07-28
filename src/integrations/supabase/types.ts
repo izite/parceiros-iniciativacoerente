@@ -342,6 +342,7 @@ export type Database = {
       }
       users: {
         Row: {
+          auth_user_id: string | null
           created_at: string | null
           email: string
           empresa: string | null
@@ -355,6 +356,7 @@ export type Database = {
           tipo: string
         }
         Insert: {
+          auth_user_id?: string | null
           created_at?: string | null
           email: string
           empresa?: string | null
@@ -368,6 +370,7 @@ export type Database = {
           tipo: string
         }
         Update: {
+          auth_user_id?: string | null
           created_at?: string | null
           email?: string
           empresa?: string | null
