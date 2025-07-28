@@ -61,26 +61,26 @@ const NewContract = () => {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.nif || !formData.nome) {
       alert("Por favor, preencha os campos obrigatórios.")
       return
     }
 
     const newContract = {
-      id: `contract-${Date.now()}`,
       nif: formData.nif,
       cliente_nome: formData.nome,
       estado: "Pendente",
-      inicio_fornecimento: formData.dataAssinatura ? format(formData.dataAssinatura, "yyyy-MM-dd") : "",
+      inicio_fornecimento: formData.dataRenunciaContrato ? format(formData.dataRenunciaContrato, "yyyy-MM-dd") : null,
       consumo: parseFloat(formData.potenciaContratada) || 0,
       comissao: 0,
       fornecedor: formData.fornecedor,
       cpe_cui: formData.cpe,
-      // ... outros campos
+      tipo_energia: formData.tipo || "electricidade",
+      notas: formData.observacoesContrato
     }
 
-    addContract(newContract)
+    await addContract(newContract)
     navigate("/contracts")
   }
 
