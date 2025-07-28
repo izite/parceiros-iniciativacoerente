@@ -188,26 +188,25 @@ export default function NewRequest() {
               <CardContent>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {suppliers.map((supplier) => (
-                    <div
-                      key={supplier.name}
-                      onClick={() => handleSupplierToggle(supplier.name)}
-                      className={`
-                        p-4 rounded-lg border-2 cursor-pointer transition-all
-                        flex flex-col items-center text-center gap-2
-                        hover:shadow-md
-                        ${selectedSuppliers.includes(supplier.name)
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border hover:border-primary/50'
-                        }
-                      `}
-                    >
-                      <img 
-                        src={supplier.logo} 
-                        alt={`${supplier.name} logo`}
-                        className="w-12 h-6 object-contain"
-                      />
-                      <span className="text-sm font-medium">{supplier.name}</span>
-                    </div>
+                      <div
+                        key={supplier.name}
+                        onClick={() => handleSupplierToggle(supplier.name)}
+                        className={`
+                          p-4 rounded-lg border-2 cursor-pointer transition-all
+                          flex flex-col items-center justify-center text-center gap-2
+                          hover:shadow-md min-h-[100px]
+                          ${selectedSuppliers.includes(supplier.name)
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border hover:border-primary/50'
+                          }
+                        `}
+                      >
+                        <img 
+                          src={supplier.logo} 
+                          alt={`${supplier.name} logo`}
+                          className="w-16 h-12 object-contain"
+                        />
+                      </div>
                   ))}
                 </div>
                 {selectedSuppliers.length > 0 && (
