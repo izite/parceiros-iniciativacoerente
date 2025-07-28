@@ -13,10 +13,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, ChevronLeft, Upload } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 
 const NewContract = () => {
   const navigate = useNavigate()
   const { addContract } = useContracts()
+  const { toast } = useToast()
   
   const [formData, setFormData] = useState({
     nif: "",
@@ -62,26 +64,49 @@ const NewContract = () => {
   }
 
   const handleSubmit = async () => {
-    if (!formData.nif || !formData.nome) {
-      alert("Por favor, preencha os campos obrigatórios.")
-      return
-    }
+    try {
+      console.log("Iniciando submissão do contrato...")
+      
+      if (!formData.nif || !formData.nome) {
+        toast({
+          title: "Campos obrigatórios",
+          description: "Por favor, preencha o NIF e o Nome.",
+          variant: "destructive"
+        })
+        return
+      }
 
-    const newContract = {
-      nif: formData.nif,
-      cliente_nome: formData.nome,
-      estado: "Pendente",
-      inicio_fornecimento: formData.dataRenunciaContrato ? format(formData.dataRenunciaContrato, "yyyy-MM-dd") : null,
-      consumo: parseFloat(formData.potenciaContratada) || 0,
-      comissao: 0,
-      fornecedor: formData.fornecedor,
-      cpe_cui: formData.cpe,
-      tipo_energia: formData.tipo || "electricidade",
-      notas: formData.observacoesContrato
-    }
+      const newContract = {
+        nif: formData.nif,
+        cliente_nome: formData.nome,
+        estado: "Pendente",
+        inicio_fornecimento: formData.dataRenunciaContrato ? format(formData.dataRenunciaContrato, "yyyy-MM-dd") : null,
+        consumo: parseFloat(formData.potenciaContratada) || 0,
+        comissao: 0,
+        fornecedor: formData.fornecedor,
+        cpe_cui: formData.cpe,
+        tipo_energia: formData.tipo || "electricidade",
+        notas: formData.observacoesContrato
+      }
 
-    await addContract(newContract)
-    navigate("/contracts")
+      console.log("Dados do contrato:", newContract)
+      
+      await addContract(newContract)
+      
+      toast({
+        title: "Sucesso",
+        description: "Contrato criado com sucesso!",
+      })
+      
+      navigate("/contracts")
+    } catch (error) {
+      console.error("Erro ao criar contrato:", error)
+      toast({
+        title: "Erro",
+        description: "Erro ao criar contrato. Tente novamente.",
+        variant: "destructive"
+      })
+    }
   }
 
   const handleCancel = () => {
