@@ -102,10 +102,10 @@ export default function NewRequest() {
                         <SelectValue placeholder="Selecionar categoria" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="comercial">Comercial</SelectItem>
-                        <SelectItem value="tecnico">Técnico</SelectItem>
-                        <SelectItem value="financeiro">Financeiro</SelectItem>
-                        <SelectItem value="suporte">Suporte</SelectItem>
+                        <SelectItem value="scoring">Scoring</SelectItem>
+                        <SelectItem value="proposta">Proposta</SelectItem>
+                        <SelectItem value="pedido-faturas">Pedido de Faturas</SelectItem>
+                        <SelectItem value="outros">Outros</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
