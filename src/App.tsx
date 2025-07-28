@@ -12,7 +12,7 @@ import { UserProvider } from "@/contexts/user-context";
 import { UsersProvider } from "@/contexts/users-context";
 import { ContractsProvider } from "@/contexts/contracts-context";
 import { ContactsProvider } from "@/contexts/contacts-context";
-import Login from "./pages/Login";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Contracts from "./pages/Contracts";
@@ -47,7 +47,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Auth />} />
             <Route path="/home" element={
               <SidebarProvider defaultOpen={true}>
                 <div className="min-h-screen flex w-full">
