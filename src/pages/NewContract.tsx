@@ -139,7 +139,7 @@ const NewContract = () => {
             CANCELAR
           </Button>
           <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={handleSubmit}>
-            CONTINUAR
+            INSERIR
           </Button>
         </div>
       </div>
@@ -232,11 +232,10 @@ const NewContract = () => {
                 <SelectTrigger>
                   <SelectValue placeholder="—" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="multibanco">Multibanco</SelectItem>
-                  <SelectItem value="transferencia">Transferência Bancária</SelectItem>
-                  <SelectItem value="debito-direto">Débito Direto</SelectItem>
-                </SelectContent>
+                  <SelectContent>
+                    <SelectItem value="multibanco">Multibanco</SelectItem>
+                    <SelectItem value="debito-direto">Débito Direto</SelectItem>
+                  </SelectContent>
               </Select>
             </div>
 
@@ -300,7 +299,6 @@ const NewContract = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="multibanco">Multibanco</SelectItem>
-                    <SelectItem value="transferencia">Transferência Bancária</SelectItem>
                     <SelectItem value="debito-direto">Débito Direto</SelectItem>
                   </SelectContent>
                 </Select>
@@ -315,6 +313,19 @@ const NewContract = () => {
                     <SelectItem value="edp">EDP</SelectItem>
                     <SelectItem value="endesa">Endesa</SelectItem>
                     <SelectItem value="iberdrola">Iberdrola</SelectItem>
+                    <SelectItem value="galp">Galp Energia</SelectItem>
+                    <SelectItem value="agora">Ágora Luz</SelectItem>
+                    <SelectItem value="capwatt">CAPWATT</SelectItem>
+                    <SelectItem value="nabalia">Nabalia</SelectItem>
+                    <SelectItem value="plenitude">Plenitude</SelectItem>
+                    <SelectItem value="portulogos">Portulogos</SelectItem>
+                    <SelectItem value="yes">Yes Energy</SelectItem>
+                    <SelectItem value="zug">Zug Power</SelectItem>
+                    <SelectItem value="ezu">EZU Energia</SelectItem>
+                    <SelectItem value="alfa">Alfa Energia</SelectItem>
+                    <SelectItem value="use">Use Energy</SelectItem>
+                    <SelectItem value="audax">Audax</SelectItem>
+                    <SelectItem value="outros">Outros</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -342,7 +353,7 @@ const NewContract = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="cpe">CPE</Label>
+              <Label htmlFor="cpe">CPE/CUI</Label>
               <Input
                 id="cpe"
                 value={formData.cpe}
@@ -360,9 +371,11 @@ const NewContract = () => {
                     <SelectValue placeholder="—" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="baixa">Baixa Tensão</SelectItem>
-                    <SelectItem value="media">Média Tensão</SelectItem>
-                    <SelectItem value="alta">Alta Tensão</SelectItem>
+                    <SelectItem value="btn">BTN</SelectItem>
+                    <SelectItem value="bte">BTE</SelectItem>
+                    <SelectItem value="mt">MT</SelectItem>
+                    <SelectItem value="at">AT</SelectItem>
+                    <SelectItem value="mat">MAT</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -387,8 +400,10 @@ const NewContract = () => {
                     <SelectValue placeholder="—" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="sem-ciclo">Sem Ciclo</SelectItem>
+                    <SelectItem value="diario">Diario</SelectItem>
                     <SelectItem value="semanal">Semanal</SelectItem>
-                    <SelectItem value="mensal">Mensal</SelectItem>
+                    <SelectItem value="semanal-opcional">Semanal Opcional</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -400,8 +415,9 @@ const NewContract = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="simples">Simples</SelectItem>
-                    <SelectItem value="bi-horaria">Bi-horária</SelectItem>
-                    <SelectItem value="tri-horaria">Tri-horária</SelectItem>
+                    <SelectItem value="bi-horario">Bi-Horario</SelectItem>
+                    <SelectItem value="tri-horario">Tri-Horario</SelectItem>
+                    <SelectItem value="tetra-horario">Tetra-Horario</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -426,6 +442,19 @@ const NewContract = () => {
                     <SelectItem value="edp">EDP</SelectItem>
                     <SelectItem value="endesa">Endesa</SelectItem>
                     <SelectItem value="iberdrola">Iberdrola</SelectItem>
+                    <SelectItem value="galp">Galp Energia</SelectItem>
+                    <SelectItem value="agora">Ágora Luz</SelectItem>
+                    <SelectItem value="capwatt">CAPWATT</SelectItem>
+                    <SelectItem value="nabalia">Nabalia</SelectItem>
+                    <SelectItem value="plenitude">Plenitude</SelectItem>
+                    <SelectItem value="portulogos">Portulogos</SelectItem>
+                    <SelectItem value="yes">Yes Energy</SelectItem>
+                    <SelectItem value="zug">Zug Power</SelectItem>
+                    <SelectItem value="ezu">EZU Energia</SelectItem>
+                    <SelectItem value="alfa">Alfa Energia</SelectItem>
+                    <SelectItem value="use">Use Energy</SelectItem>
+                    <SelectItem value="audax">Audax</SelectItem>
+                    <SelectItem value="outros">Outros</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -440,16 +469,6 @@ const NewContract = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="campanhaVersao">CAMPANHA - VERSÃO</Label>
-              <Input
-                id="campanhaVersao"
-                value={formData.campanhaVersao}
-                onChange={(e) => handleInputChange("campanhaVersao", e.target.value)}
-                placeholder="ex. C1819"
-                className="w-80"
-              />
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
@@ -507,7 +526,7 @@ const NewContract = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dataRenunciaContrato">DATA DE RENÚNCIA DO CONTRATO ANTERIOR *</Label>
+              <Label htmlFor="dataRenunciaContrato">DATA DE INICIO DE FORNECIMENTO *</Label>
               <DatePicker
                 date={formData.dataRenunciaContrato}
                 onDateChange={(date) => handleInputChange("dataRenunciaContrato", date)}
@@ -583,6 +602,16 @@ const NewContract = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Bottom Action Buttons */}
+      <div className="flex justify-center gap-4 mt-8 pb-6">
+        <Button variant="outline" onClick={handleCancel} className="px-8">
+          Cancelar
+        </Button>
+        <Button onClick={handleSubmit} className="bg-orange-500 hover:bg-orange-600 text-white px-8">
+          Inserir
+        </Button>
       </div>
     </div>
   )
