@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, ChevronLeft, Plus, ChevronRight } from "lucide-react"
+import { Search, ChevronLeft, Plus } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { useRequests } from "@/contexts/requests-context"
@@ -102,7 +102,6 @@ const Requests = () => {
                 <TableHead className="text-muted-foreground font-medium">ESTADO</TableHead>
                 <TableHead className="text-muted-foreground font-medium">SUB-UTILIZADOR</TableHead>
                 <TableHead className="text-muted-foreground font-medium">DATA</TableHead>
-                <TableHead className="w-16"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -136,16 +135,6 @@ const Requests = () => {
                       <div className="font-medium">{request.data}</div>
                       <div className="text-xs text-muted-foreground">{request.timeAgo}</div>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 w-8 p-0"
-                      onClick={() => navigate(`/requests/${request.id}`)}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

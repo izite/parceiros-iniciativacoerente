@@ -17,7 +17,6 @@ import Home from "./pages/Home";
 import Contracts from "./pages/Contracts";
 import NewContract from "./pages/NewContract";
 import Requests from "./pages/Requests";
-import RequestDetails from "./pages/RequestDetails";
 import NewRequest from "./pages/NewRequest";
 import Occurrences from "./pages/Occurrences";
 import OccurrenceDetails from "./pages/OccurrenceDetails";
@@ -53,7 +52,6 @@ const App = () => (
             <Route path="/contracts" element={<LayoutWrapper><Contracts /></LayoutWrapper>} />
             <Route path="/contracts/new" element={<LayoutWrapper><NewContract /></LayoutWrapper>} />
             <Route path="/requests" element={<LayoutWrapper><Requests /></LayoutWrapper>} />
-            <Route path="/requests/:requestId" element={<LayoutWrapper><RequestDetails /></LayoutWrapper>} />
             <Route path="/requests/new" element={<LayoutWrapper><NewRequest /></LayoutWrapper>} />
             <Route path="/occurrences" element={<LayoutWrapper><Occurrences /></LayoutWrapper>} />
             <Route path="/occurrences/:occurrenceId" element={<LayoutWrapper><OccurrenceDetails /></LayoutWrapper>} />
