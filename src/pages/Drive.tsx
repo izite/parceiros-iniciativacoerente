@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -97,7 +97,7 @@ export default function Drive() {
         .insert({
           nome_arquivo: newFolderName.trim(),
           caminho_arquivo: folderPath,
-          criado_por: user.id // Usar auth.uid() diretamente
+          criado_por: user.id
         })
 
       if (error) throw error
@@ -144,7 +144,7 @@ export default function Drive() {
           .insert({
             nome_arquivo: file.name,
             caminho_arquivo: filePath,
-            criado_por: user.id // Usar auth.uid() diretamente
+            criado_por: user.id
           })
 
         if (dbError) throw dbError
@@ -324,9 +324,9 @@ export default function Drive() {
             </BreadcrumbLink>
           </BreadcrumbItem>
           {path.map((folder, index) => (
-            <>
-              <BreadcrumbSeparator key={`sep-${folder.id}`} />
-              <BreadcrumbItem key={folder.id}>
+            <React.Fragment key={folder.id}>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
                 {index === path.length - 1 ? (
                   <BreadcrumbPage>{folder.name}</BreadcrumbPage>
                 ) : (
@@ -338,7 +338,7 @@ export default function Drive() {
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
-            </>
+            </React.Fragment>
           ))}
         </BreadcrumbList>
       </Breadcrumb>

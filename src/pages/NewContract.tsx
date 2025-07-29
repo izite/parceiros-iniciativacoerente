@@ -167,7 +167,7 @@ const NewContract = () => {
         cpe_cui: formData.cpe,
         tipo_energia: formData.tipo || "electricidade",
         notas: formData.observacoesContrato,
-        sub_utilizador: currentUser || user.email
+        sub_utilizador: user.id
       }
 
       console.log("📋 Dados do contrato a inserir:", newContract)
