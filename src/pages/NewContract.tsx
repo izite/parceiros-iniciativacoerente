@@ -84,16 +84,59 @@ const NewContract = () => {
     }
   }
 
+  const validateForm = () => {
+    const errors: string[] = []
+    
+    // Campos obrigatórios
+    if (!formData.nif) errors.push("NIF")
+    if (!formData.nome) errors.push("Nome")
+    if (!formData.morada) errors.push("Morada")
+    if (!formData.codigoPostal) errors.push("Código Postal")
+    if (!formData.localidade) errors.push("Localidade")
+    if (!formData.telefone) errors.push("Telefone")
+    if (!formData.email) errors.push("Email")
+    if (!formData.metodoPagamento) errors.push("Método Pagamento")
+    if (!formData.tipoContrato) errors.push("Tipo Contrato")
+    if (!formData.fornecedorActual) errors.push("Fornecedor Actual")
+    if (!formData.tipo) errors.push("Tipo")
+    if (!formData.cpe) errors.push("CPE/CUI")
+    if (!formData.tensao) errors.push("Tensão")
+    if (!formData.potenciaContratada) errors.push("Potência Contratada")
+    if (!formData.ciclo) errors.push("Ciclo")
+    if (!formData.tarifa) errors.push("Tarifa")
+    if (!formData.fornecedor) errors.push("Fornecedor")
+    if (!formData.estado) errors.push("Estado")
+    if (!formData.inicioFornecimento) errors.push("Início Fornecimento")
+    if (!formData.dataAssinatura) errors.push("Data de Assinatura")
+    if (!formData.dataRenunciaContrato) errors.push("Data de Início de Fornecimento")
+
+    // Validações específicas
+    if (formData.nif && formData.nif.length !== 9) {
+      errors.push("NIF deve ter exatamente 9 dígitos")
+    }
+    
+    if (formData.telefone && formData.telefone.length !== 9) {
+      errors.push("Telefone deve ter exatamente 9 dígitos")
+    }
+    
+    if (formData.codigoPostal && !/^\d{4}-\d{3}$/.test(formData.codigoPostal)) {
+      errors.push("Código Postal deve ter o formato 0000-000")
+    }
+
+    return errors
+  }
+
   const handleSubmit = async () => {
     try {
       console.log("🚀 Iniciando submissão do contrato...")
       console.log("📝 FormData atual:", formData)
       
-      if (!formData.nif || !formData.nome) {
-        console.log("❌ Validação falhou - campos obrigatórios em falta")
+      const validationErrors = validateForm()
+      if (validationErrors.length > 0) {
+        console.log("❌ Validação falhou:", validationErrors)
         toast({
-          title: "Campos obrigatórios",
-          description: "Por favor, preencha o NIF e o Nome.",
+          title: "Campos obrigatórios em falta",
+          description: `Por favor, preencha: ${validationErrors.join(", ")}`,
           variant: "destructive"
         })
         return
@@ -222,7 +265,9 @@ const NewContract = () => {
                   id="nif"
                   value={formData.nif}
                   onChange={(e) => handleInputChange("nif", e.target.value)}
-                  placeholder=""
+                  placeholder="9 dígitos"
+                  maxLength={9}
+                  pattern="[0-9]{9}"
                 />
               </div>
             </div>
@@ -238,7 +283,7 @@ const NewContract = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="morada">MORADA</Label>
+              <Label htmlFor="morada">MORADA*</Label>
               <Input
                 id="morada"
                 value={formData.morada}
@@ -249,16 +294,17 @@ const NewContract = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="codigoPostal">CÓDIGO POSTAL</Label>
+                <Label htmlFor="codigoPostal">CÓDIGO POSTAL*</Label>
                 <Input
                   id="codigoPostal"
                   value={formData.codigoPostal}
                   onChange={(e) => handleInputChange("codigoPostal", e.target.value)}
-                  placeholder=""
+                  placeholder="0000-000"
+                  pattern="\d{4}-\d{3}"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="localidade">LOCALIDADE</Label>
+                <Label htmlFor="localidade">LOCALIDADE*</Label>
                 <Input
                   id="localidade"
                   value={formData.localidade}
@@ -270,16 +316,18 @@ const NewContract = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="telefone">TELEFONE</Label>
+                <Label htmlFor="telefone">TELEFONE*</Label>
                 <Input
                   id="telefone"
                   value={formData.telefone}
                   onChange={(e) => handleInputChange("telefone", e.target.value)}
-                  placeholder=""
+                  placeholder="9 dígitos"
+                  maxLength={9}
+                  pattern="[0-9]{9}"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">EMAIL</Label>
+                <Label htmlFor="email">EMAIL*</Label>
                 <Input
                   id="email"
                   type="email"
@@ -291,7 +339,7 @@ const NewContract = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="metodoPagamento">MÉTODO PAGAMENTO</Label>
+              <Label htmlFor="metodoPagamento">MÉTODO PAGAMENTO*</Label>
               <Select value={formData.metodoPagamento} onValueChange={(value) => handleInputChange("metodoPagamento", value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="—" />
@@ -344,7 +392,7 @@ const NewContract = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="tipoContrato">TIPO CONTRATO</Label>
+                <Label htmlFor="tipoContrato">TIPO CONTRATO*</Label>
                 <Select value={formData.tipoContrato} onValueChange={(value) => handleInputChange("tipoContrato", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Negócios" />
@@ -356,7 +404,7 @@ const NewContract = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="metodoPagamentoContrato">MÉTODO PAGAMENTO</Label>
+                <Label htmlFor="metodoPagamentoContrato">MÉTODO PAGAMENTO*</Label>
                 <Select value={formData.metodoPagamento} onValueChange={(value) => handleInputChange("metodoPagamento", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Multibanco" />
@@ -368,7 +416,7 @@ const NewContract = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="fornecedorActual">FORNECEDOR ACTUAL</Label>
+                <Label htmlFor="fornecedorActual">FORNECEDOR ACTUAL*</Label>
                 <Select value={formData.fornecedorActual} onValueChange={(value) => handleInputChange("fornecedorActual", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="—" />
@@ -396,7 +444,7 @@ const NewContract = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tipo">TIPO</Label>
+              <Label htmlFor="tipo">TIPO*</Label>
               <Select value={formData.tipo} onValueChange={(value) => handleInputChange("tipo", value)}>
                 <SelectTrigger className="w-80">
                   <SelectValue placeholder="Electricidade" />
@@ -417,7 +465,7 @@ const NewContract = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="cpe">CPE/CUI</Label>
+              <Label htmlFor="cpe">CPE/CUI*</Label>
               <Input
                 id="cpe"
                 value={formData.cpe}
@@ -429,7 +477,7 @@ const NewContract = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="tensao">TENSÃO</Label>
+                <Label htmlFor="tensao">TENSÃO*</Label>
                 <Select value={formData.tensao} onValueChange={(value) => handleInputChange("tensao", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="—" />
@@ -444,7 +492,7 @@ const NewContract = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="potenciaContratada">POTÊNCIA CONTRATADA</Label>
+                <Label htmlFor="potenciaContratada">POTÊNCIA CONTRATADA*</Label>
                 <div className="flex">
                   <Input
                     id="potenciaContratada"
@@ -458,7 +506,7 @@ const NewContract = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ciclo">CICLO</Label>
+                <Label htmlFor="ciclo">CICLO*</Label>
                 <Select value={formData.ciclo} onValueChange={(value) => handleInputChange("ciclo", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="—" />
@@ -472,7 +520,7 @@ const NewContract = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="tarifa">TARIFA</Label>
+                <Label htmlFor="tarifa">TARIFA*</Label>
                 <Select value={formData.tarifa} onValueChange={(value) => handleInputChange("tarifa", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="—" />
@@ -497,7 +545,7 @@ const NewContract = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="fornecedor">FORNECEDOR</Label>
+                <Label htmlFor="fornecedor">FORNECEDOR*</Label>
                 <Select value={formData.fornecedor} onValueChange={(value) => handleInputChange("fornecedor", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="—" />
@@ -536,7 +584,7 @@ const NewContract = () => {
             {/* Novos campos solicitados */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="estado">ESTADO</Label>
+                <Label htmlFor="estado">ESTADO*</Label>
                 <Select value={formData.estado} onValueChange={(value) => handleInputChange("estado", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="—" />
@@ -551,7 +599,7 @@ const NewContract = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="inicioFornecimento">INICIO FORN.</Label>
+                <Label htmlFor="inicioFornecimento">INICIO FORN.*</Label>
                 <DatePicker
                   date={formData.inicioFornecimento}
                   onDateChange={(date) => handleInputChange("inicioFornecimento", date)}
@@ -589,7 +637,7 @@ const NewContract = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="dataAssinatura">DATA DE ASSINATURA</Label>
+                <Label htmlFor="dataAssinatura">DATA DE ASSINATURA*</Label>
                 <DatePicker
                   date={formData.dataAssinatura}
                   onDateChange={(date) => handleInputChange("dataAssinatura", date)}
@@ -643,7 +691,7 @@ const NewContract = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dataRenunciaContrato">DATA DE INICIO DE FORNECIMENTO *</Label>
+              <Label htmlFor="dataRenunciaContrato">DATA DE INICIO DE FORNECIMENTO*</Label>
               <DatePicker
                 date={formData.dataRenunciaContrato}
                 onDateChange={(date) => handleInputChange("dataRenunciaContrato", date)}

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,9 +11,10 @@ import { useToast } from "@/hooks/use-toast"
 import { Plus, Phone, Mail, User, X } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { supabase } from "@/integrations/supabase/client"
 
 export default function Contacts() {
-  const { contacts, loading, addContact, deleteContact } = useContacts()
+  const { contacts, loading, addContact, deleteContact, fetchContacts } = useContacts()
   const { user } = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -22,9 +23,33 @@ export default function Contacts() {
   const [email, setEmail] = useState("")
   const [telefone, setTelefone] = useState("")
   const [empresa, setEmpresa] = useState("")
+  const [currentUserProfile, setCurrentUserProfile] = useState<any>(null)
 
-  // Verificar se é backoffice - por enquanto deixo sempre true até termos o sistema de roles
-  const isBackoffice = true
+  // Carregar perfil do utilizador atual
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (user) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('perfil')
+          .eq('auth_user_id', user.id)
+          .single()
+        
+        if (data && !error) {
+          setCurrentUserProfile(data)
+        }
+      }
+    }
+    loadUserProfile()
+  }, [user])
+
+  // Carregar contactos ao montar a página
+  useEffect(() => {
+    fetchContacts()
+  }, [])
+
+  // Verificar se é backoffice
+  const isBackoffice = currentUserProfile?.perfil === 'backoffice'
 
   const getCurrentDate = () => {
     const today = new Date()

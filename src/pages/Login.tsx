@@ -5,17 +5,52 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Zap } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
+import { useToast } from "@/hooks/use-toast"
 
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { signIn } = useAuth()
+  const { toast } = useToast()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Simple authentication simulation
-    if (email && password) {
+    
+    if (!email || !password) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    setLoading(true)
+    
+    try {
+      const { error } = await signIn(email, password)
+      
+      if (error) {
+        toast({
+          title: "Erro no login",
+          description: "Email ou password incorretos.",
+          variant: "destructive"
+        })
+        return
+      }
+      
       navigate("/home")
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro inesperado.",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -91,8 +126,8 @@ export default function Login() {
                     Esqueceu a senha?
                   </button>
                 </div>
-                <Button type="submit" className="w-full h-12 text-base font-semibold">
-                  Entrar
+                <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={loading}>
+                  {loading ? "A entrar..." : "Entrar"}
                 </Button>
               </form>
             </CardContent>
