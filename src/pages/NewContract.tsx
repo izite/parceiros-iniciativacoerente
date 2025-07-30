@@ -47,7 +47,7 @@ const NewContract = () => {
     notas: "",
     tipoContrato: "",
     fornecedorActual: "",
-    tipo: "",
+    tipo: "electricidade",
     cpe: "",
     tensao: "",
     potenciaContratada: "",
