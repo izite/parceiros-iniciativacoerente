@@ -75,9 +75,23 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
       
       console.log('Authenticated user:', user.id)
       
+      // Get the correct user ID from the users table
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .single()
+      
+      if (userError || !userData) {
+        console.error('User not found in users table:', userError)
+        throw new Error('Utilizador não encontrado na base de dados')
+      }
+      
+      console.log('Found user ID in users table:', userData.id)
+      
       const contractData = {
         ...newContract,
-        autor_id: user.id
+        autor_id: userData.id
       }
       
       console.log('Contract data to insert:', contractData)
