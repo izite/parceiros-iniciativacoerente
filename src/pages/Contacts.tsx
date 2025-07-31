@@ -31,7 +31,7 @@ export default function Contacts() {
       if (user) {
         const { data, error } = await supabase
           .from('users')
-          .select('perfil')
+          .select('role')
           .eq('auth_user_id', user.id)
           .single()
         
@@ -49,7 +49,7 @@ export default function Contacts() {
   }, [])
 
   // Verificar se é backoffice
-  const isBackoffice = currentUserProfile?.perfil === 'backoffice'
+  const isBackoffice = currentUserProfile?.role === 'backoffice'
 
   const getCurrentDate = () => {
     const today = new Date()
