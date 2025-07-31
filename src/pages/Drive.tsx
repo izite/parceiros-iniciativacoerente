@@ -128,8 +128,13 @@ export default function Drive() {
 
     try {
       for (const file of Array.from(files)) {
-        // Upload para storage
-        const fileName = `${Date.now()}_${file.name}`
+        // Limpar o nome do ficheiro para evitar caracteres especiais
+        const sanitizedFileName = file.name
+          .replace(/[^a-zA-Z0-9._-]/g, '_') // Substituir caracteres especiais por underscore
+          .replace(/\s+/g, '_') // Substituir espaços por underscore
+          .toLowerCase()
+        
+        const fileName = `${Date.now()}_${sanitizedFileName}`
         const filePath = basePath ? `${basePath}/${fileName}` : fileName
         
         const { error: uploadError } = await supabase.storage
