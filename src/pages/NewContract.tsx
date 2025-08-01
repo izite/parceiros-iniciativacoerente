@@ -108,7 +108,7 @@ const NewContract = () => {
     if (!formData.estado) errors.push("Estado")
     if (!formData.inicioFornecimento) errors.push("Início Fornecimento")
     if (!formData.dataAssinatura) errors.push("Data de Assinatura")
-    if (!formData.dataRenunciaContrato) errors.push("Data de Início de Fornecimento")
+    
 
     // Validações específicas
     if (formData.nif && formData.nif.length !== 9) {
@@ -338,38 +338,6 @@ const NewContract = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="metodoPagamento">MÉTODO PAGAMENTO*</Label>
-              <Select value={formData.metodoPagamento} onValueChange={(value) => handleInputChange("metodoPagamento", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="—" />
-                </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="multibanco">Multibanco</SelectItem>
-                    <SelectItem value="debito-direto">Débito Direto</SelectItem>
-                  </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="codigoCrc">CÓDIGO DA CRC</Label>
-                <Input
-                  id="codigoCrc"
-                  value={formData.codigoCrc}
-                  onChange={(e) => handleInputChange("codigoCrc", e.target.value)}
-                  placeholder="ex. 0001-2345-6789"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dataValidadeCrc">DATA VALIDADE DA CRC</Label>
-                <DatePicker
-                  date={formData.dataValidadeCrc}
-                  onDateChange={(date) => handleInputChange("dataValidadeCrc", date)}
-                  placeholder="Selecionar data"
-                />
-              </div>
-            </div>
 
             <div className="space-y-2">
               <Label htmlFor="notas">NOTAS</Label>
@@ -404,10 +372,10 @@ const NewContract = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="metodoPagamentoContrato">MÉTODO PAGAMENTO*</Label>
+                <Label htmlFor="metodoPagamento">MÉTODO PAGAMENTO*</Label>
                 <Select value={formData.metodoPagamento} onValueChange={(value) => handleInputChange("metodoPagamento", value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Multibanco" />
+                    <SelectValue placeholder="—" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="multibanco">Multibanco</SelectItem>
@@ -582,7 +550,7 @@ const NewContract = () => {
             </div>
 
             {/* Novos campos solicitados */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="estado">ESTADO*</Label>
                 <Select value={formData.estado} onValueChange={(value) => handleInputChange("estado", value)}>
@@ -632,35 +600,36 @@ const NewContract = () => {
                   </span>
                 </div>
               </div>
-            </div>
-
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="dataAssinatura">DATA DE ASSINATURA*</Label>
-                <DatePicker
-                  date={formData.dataAssinatura}
-                  onDateChange={(date) => handleInputChange("dataAssinatura", date)}
-                  placeholder="28-07-2025"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="codigoCrcDetalhes">CÓDIGO DA CRC</Label>
+                <Label htmlFor="codigoCrc">CÓDIGO DA CRC</Label>
                 <Input
-                  id="codigoCrcDetalhes"
+                  id="codigoCrc"
                   value={formData.codigoCrc}
                   onChange={(e) => handleInputChange("codigoCrc", e.target.value)}
                   placeholder="ex. 0001-2345-6789"
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="dataValidadeCrcDetalhes">DATA VALIDADE DA CRC</Label>
+                <Label htmlFor="dataValidadeCrc">DATA VALIDADE DA CRC</Label>
                 <DatePicker
                   date={formData.dataValidadeCrc}
                   onDateChange={(date) => handleInputChange("dataValidadeCrc", date)}
                   placeholder="Selecionar data"
                 />
               </div>
+            </div>
+
+
+            <div className="space-y-2">
+              <Label htmlFor="dataAssinatura">DATA DE ASSINATURA*</Label>
+              <DatePicker
+                date={formData.dataAssinatura}
+                onDateChange={(date) => handleInputChange("dataAssinatura", date)}
+                placeholder="28-07-2025"
+              />
             </div>
 
             <div className="space-y-4">
@@ -690,14 +659,6 @@ const NewContract = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="dataRenunciaContrato">DATA DE INICIO DE FORNECIMENTO*</Label>
-              <DatePicker
-                date={formData.dataRenunciaContrato}
-                onDateChange={(date) => handleInputChange("dataRenunciaContrato", date)}
-                placeholder="Selecionar data"
-              />
-            </div>
 
             <div className="space-y-2">
               <Label htmlFor="observacoesContrato">OBSERVAÇÕES DO CONTRATO</Label>
