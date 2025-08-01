@@ -156,6 +156,23 @@ const NewContract = () => {
 
       console.log("✅ Utilizador autenticado:", user.email)
 
+      // Get the user ID from the users table
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .single()
+      
+      if (userError || !userData) {
+        console.error('User not found in users table:', userError)
+        toast({
+          title: "Erro",
+          description: "Utilizador não encontrado na base de dados",
+          variant: "destructive"
+        })
+        return
+      }
+
       const newContract = {
         nif: formData.nif,
         cliente_nome: formData.nome,
@@ -167,7 +184,7 @@ const NewContract = () => {
         cpe_cui: formData.cpe,
         tipo_energia: formData.tipo || "electricidade",
         notas: formData.observacoesContrato,
-        sub_utilizador: user.id
+        sub_utilizador: userData.id
       }
 
       console.log("📋 Dados do contrato a inserir:", newContract)
