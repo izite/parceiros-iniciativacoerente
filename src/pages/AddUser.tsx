@@ -18,6 +18,7 @@ const AddUser = () => {
     estado: "Activo",
     nome: "",
     email: "",
+    password: "",
     telemovel: "",
     empresa: "",
     nivel: "",
@@ -62,6 +63,7 @@ const AddUser = () => {
       await addUser({
         nome: inputs.nome,
         email: inputs.email,
+        password: inputs.password,
         telefone: inputs.telemovel,
         empresa: inputs.empresa,
         estado: inputs.estado,
@@ -172,6 +174,18 @@ const AddUser = () => {
                 Se o utilizador a criar não possuir endereço de email, pode inserir 
                 um nome (apenas caracteres alfanuméricos, sem espaços).
               </p>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <Label htmlFor="password">PASSWORD</Label>
+              <Input
+                id="password"
+                type="password"
+                value={inputs.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                placeholder="Password do utilizador"
+              />
             </div>
 
             {/* Empresa */}

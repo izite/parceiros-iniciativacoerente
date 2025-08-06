@@ -15,7 +15,7 @@ export type AppUser = {
 
 type UsersContextType = {
   users: AppUser[]
-  addUser: (user: Omit<AppUser, 'id'>) => void
+  addUser: (user: Omit<AppUser, 'id'> & { password?: string }) => void
   updateUser: (id: string, user: Partial<AppUser>) => void
   deleteUser: (id: string) => void
   getUserById: (id: string) => AppUser | undefined
@@ -63,8 +63,30 @@ export function UsersProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const addUser = async (user: Omit<AppUser, 'id'>) => {
+  const addUser = async (user: Omit<AppUser, 'id'> & { password?: string }) => {
     try {
+      // Primeiro criar o user de autenticação se password foi fornecida
+      if (user.password) {
+        const { error: authError } = await supabase.auth.signUp({
+          email: user.email,
+          password: user.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`
+          }
+        })
+
+        if (authError) {
+          console.error('Error creating auth user:', authError)
+          toast({
+            title: "Erro",
+            description: "Erro ao criar conta de autenticação.",
+            variant: "destructive"
+          })
+          throw authError
+        }
+      }
+
+      // Depois criar o registo na tabela users
       const { data, error } = await supabase
         .from('users')
         .insert([{
