@@ -5,54 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { useOccurrences } from "@/contexts/occurrences-context"
 
-const occurrences = [
-  {
-    id: "OC001",
-    subject: "Problema na faturação energética",
-    status: "Em Análise",
-    date: "2024-07-20",
-    client: "EMPRESA TESTE, LDA",
-    cpe: "PT0001234567890123456789012",
-    nif: "123456789"
-  },
-  {
-    id: "OC002", 
-    subject: "Alteração de potência contratada",
-    status: "Resolvido",
-    date: "2024-07-18",
-    client: "INDUSTRIAL SOLUTIONS",
-    cpe: "PT0001234567890123456789013",
-    nif: "987654321"
-  },
-  {
-    id: "OC003",
-    subject: "Mudança de fornecedor",
-    status: "Pendente",
-    date: "2024-07-22",
-    client: "GREEN ENERGY CORP",
-    cpe: "PT0001234567890123456789014",
-    nif: "456789123"
-  },
-  {
-    id: "OC004",
-    subject: "Análise de consumo irregular",
-    status: "Em Análise",
-    date: "2024-07-19",
-    client: "CITY MUNICIPAL",
-    cpe: "PT0001234567890123456789015",
-    nif: "789123456"
-  },
-  {
-    id: "OC005",
-    subject: "Reclamação sobre tarifário",
-    status: "Cancelado",
-    date: "2024-07-15",
-    client: "TECH INDUSTRIES LTD",
-    cpe: "PT0001234567890123456789016",
-    nif: "321654987"
-  }
-]
 
 const getStatusBadge = (status: string) => {
   const statusConfig = {
@@ -75,13 +29,14 @@ const getStatusBadge = (status: string) => {
 
 export default function Occurrences() {
   const navigate = useNavigate()
+  const { occurrences, loading } = useOccurrences()
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredOccurrences = occurrences.filter(occurrence =>
-    occurrence.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    occurrence.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    occurrence.cpe.includes(searchTerm) ||
-    occurrence.id.toLowerCase().includes(searchTerm.toLowerCase())
+    occurrence.assunto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    occurrence.cliente_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (occurrence.cpe_cui && occurrence.cpe_cui.includes(searchTerm)) ||
+    (occurrence.numero_formatado && occurrence.numero_formatado.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
   return (
@@ -119,7 +74,7 @@ export default function Occurrences() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>NIF</TableHead>
+              <TableHead>ID</TableHead>
               <TableHead>Assunto</TableHead>
               <TableHead>Cliente / CPE</TableHead>
               <TableHead>Estado</TableHead>
@@ -128,42 +83,56 @@ export default function Occurrences() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredOccurrences.map((occurrence) => (
-              <TableRow key={occurrence.id} className="hover:bg-muted/50">
-                <TableCell className="font-medium">{occurrence.nif}</TableCell>
-                <TableCell className="font-medium">{occurrence.subject}</TableCell>
-                <TableCell className="text-sm">
-                  <div>
-                    <div className="font-medium">{occurrence.client}</div>
-                    <div className="text-muted-foreground text-xs">{occurrence.cpe}</div>
-                  </div>
-                </TableCell>
-                <TableCell>{getStatusBadge(occurrence.status)}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {new Date(occurrence.date).toLocaleDateString('pt-PT')}
-                </TableCell>
-                <TableCell>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={() => window.location.href = `/occurrences/${occurrence.id}`}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  A carregar ocorrências...
                 </TableCell>
               </TableRow>
-            ))}
+            ) : filteredOccurrences.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  {searchTerm ? "Nenhuma ocorrência encontrada com os critérios de pesquisa" : "Nenhuma ocorrência criada ainda"}
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredOccurrences.map((occurrence) => (
+                <TableRow key={occurrence.id} className="hover:bg-muted/50">
+                  <TableCell className="font-medium">
+                    {occurrence.numero_formatado || occurrence.id.slice(0, 8)}
+                  </TableCell>
+                  <TableCell className="font-medium">{occurrence.assunto}</TableCell>
+                  <TableCell className="text-sm">
+                    <div>
+                      <div className="font-medium">{occurrence.cliente_nome}</div>
+                      {occurrence.cpe_cui && (
+                        <div className="text-muted-foreground text-xs">{occurrence.cpe_cui}</div>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>{getStatusBadge(occurrence.estado)}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    <div className="space-y-1">
+                      <div className="font-medium">{occurrence.data}</div>
+                      <div className="text-xs text-muted-foreground">{occurrence.timeAgo}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => navigate(`/occurrences/${occurrence.id}`)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
 
-      {filteredOccurrences.length === 0 && (
-        <div className="text-center py-12">
-          <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">Nenhuma ocorrência encontrada</h3>
-          <p className="text-muted-foreground">Tente ajustar sua pesquisa ou crie uma nova ocorrência.</p>
-        </div>
-      )}
     </div>
   )
 }

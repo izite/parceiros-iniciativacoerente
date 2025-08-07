@@ -231,7 +231,7 @@ const Requests = () => {
             <Table>
               <TableHeader>
                 <TableRow className="border-b">
-                  <TableHead className="text-muted-foreground font-medium">COMERCIALIZADORA</TableHead>
+                  <TableHead className="text-muted-foreground font-medium">ID / COMERCIALIZADORA</TableHead>
                   <TableHead className="text-muted-foreground font-medium">ASSUNTO</TableHead>
                   <TableHead className="text-muted-foreground font-medium">NOME/NIF</TableHead>
                   <TableHead className="text-muted-foreground font-medium">ESTADO</TableHead>
@@ -251,9 +251,14 @@ const Requests = () => {
                   filteredRequests.map((request) => (
                     <TableRow key={request.id} className="hover:bg-muted/50">
                       <TableCell className="font-medium">
-                        {request.fornecedores && request.fornecedores.length > 0 
-                          ? request.fornecedores.join(", ") 
-                          : "N/A"}
+                        <div className="space-y-1">
+                          <div className="font-medium">{request.numero_formatado || request.id.slice(0, 8)}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {request.fornecedores && request.fornecedores.length > 0 
+                              ? request.fornecedores.join(", ") 
+                              : "N/A"}
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">

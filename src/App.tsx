@@ -11,6 +11,7 @@ import { UsersProvider } from "@/contexts/users-context";
 import { ContractsProvider } from "@/contexts/contracts-context";
 import { ContactsProvider } from "@/contexts/contacts-context";
 import { RequestsProvider } from "@/contexts/requests-context";
+import { OccurrencesProvider } from "@/contexts/occurrences-context";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
@@ -42,6 +43,7 @@ const App = () => (
           <ContractsProvider>
             <ContactsProvider>
               <RequestsProvider>
+                <OccurrencesProvider>
               <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -67,6 +69,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
               </TooltipProvider>
+                </OccurrencesProvider>
               </RequestsProvider>
             </ContactsProvider>
           </ContractsProvider>

@@ -4,6 +4,8 @@ import { toast } from 'sonner'
 
 export interface Request {
   id: string
+  numero_id?: number
+  numero_formatado?: string
   assunto: string
   cliente_nome: string
   cliente_nif: string
@@ -45,8 +47,12 @@ export function RequestsProvider({ children }: { children: ReactNode }) {
       timeAgo = `há ${diffHours} hora${diffHours > 1 ? 's' : ''}`
     }
 
+    const numeroFormatado = data.numero_id ? `PD${String(data.numero_id).padStart(3, '0')}` : ''
+
     return {
       id: data.id,
+      numero_id: data.numero_id,
+      numero_formatado: numeroFormatado,
       assunto: data.assunto || '',
       cliente_nome: data.cliente_nome || '',
       cliente_nif: data.cliente_nif || '',

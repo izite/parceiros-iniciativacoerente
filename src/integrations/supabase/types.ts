@@ -339,6 +339,7 @@ export type Database = {
           descricao: string | null
           estado: string | null
           id: string
+          numero_id: number
         }
         Insert: {
           assunto: string
@@ -351,6 +352,7 @@ export type Database = {
           descricao?: string | null
           estado?: string | null
           id?: string
+          numero_id?: number
         }
         Update: {
           assunto?: string
@@ -363,6 +365,7 @@ export type Database = {
           descricao?: string | null
           estado?: string | null
           id?: string
+          numero_id?: number
         }
         Relationships: [
           {
@@ -403,6 +406,7 @@ export type Database = {
           fornecedores: string[] | null
           id: string
           mensagem: string | null
+          numero_id: number
           prioridade: string | null
           sub_utilizador: string | null
         }
@@ -420,6 +424,7 @@ export type Database = {
           fornecedores?: string[] | null
           id?: string
           mensagem?: string | null
+          numero_id?: number
           prioridade?: string | null
           sub_utilizador?: string | null
         }
@@ -437,6 +442,7 @@ export type Database = {
           fornecedores?: string[] | null
           id?: string
           mensagem?: string | null
+          numero_id?: number
           prioridade?: string | null
           sub_utilizador?: string | null
         }
@@ -508,7 +514,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_occurrence_number: {
+        Args: { occurrence_id: string }
+        Returns: string
+      }
+      get_request_number: {
+        Args: { request_id: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

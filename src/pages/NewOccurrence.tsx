@@ -9,12 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Home, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
-import { supabase } from "@/integrations/supabase/client"
 import { useUsers } from "@/contexts/users-context"
+import { useOccurrences } from "@/contexts/occurrences-context"
 
 const NewOccurrence = () => {
   const navigate = useNavigate()
   const { users } = useUsers()
+  const { addOccurrence } = useOccurrences()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     assunto: "",
@@ -31,50 +32,18 @@ const NewOccurrence = () => {
     setLoading(true)
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      await addOccurrence({
+        assunto: formData.assunto,
+        descricao: formData.descricao,
+        cliente_nome: formData.cliente_nome,
+        cpe_cui: formData.cpe_cui,
+        estado: formData.estado,
+        autor_id: formData.utilizador_id || undefined
+      })
       
-      if (!user) {
-        toast.error('Utilizador não autenticado')
-        return
-      }
-
-      // Verificar se o utilizador existe na tabela users
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single()
-
-      if (userError || !userData) {
-        toast.error('Perfil de utilizador não encontrado. Contacte o administrador.')
-        return
-      }
-
-      const { data, error } = await supabase
-        .from('ocorrencias')
-        .insert({
-          assunto: formData.assunto,
-          descricao: formData.descricao,
-          cliente_nome: formData.cliente_nome,
-          cpe_cui: formData.cpe_cui,
-          estado: formData.estado,
-          autor_id: userData.id,
-          criado_por: userData.id
-        })
-        .select()
-        .single()
-
-      if (error) {
-        console.error('Erro ao criar ocorrência:', error)
-        toast.error('Erro ao criar ocorrência')
-        return
-      }
-
-      toast.success('Ocorrência criada com sucesso')
       navigate('/occurrences')
     } catch (error) {
       console.error('Erro ao criar ocorrência:', error)
-      toast.error('Erro ao criar ocorrência')
     } finally {
       setLoading(false)
     }
