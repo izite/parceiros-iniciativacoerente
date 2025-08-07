@@ -48,8 +48,8 @@ export default function Contacts() {
     fetchContacts()
   }, [])
 
-  // Verificar se é backoffice
-  const isBackoffice = currentUserProfile?.role === 'backoffice'
+  // Verificar se é backoffice ou email específico
+  const isBackoffice = currentUserProfile?.role === 'backoffice' || user?.email === 'testes@ic.pt'
 
   const getCurrentDate = () => {
     const today = new Date()

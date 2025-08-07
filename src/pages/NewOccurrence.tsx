@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,9 +10,11 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Home, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { supabase } from "@/integrations/supabase/client"
+import { useUsers } from "@/contexts/users-context"
 
 const NewOccurrence = () => {
   const navigate = useNavigate()
+  const { users } = useUsers()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     assunto: "",
@@ -20,7 +22,8 @@ const NewOccurrence = () => {
     cliente_nome: "",
     nif: "",
     cpe_cui: "",
-    estado: "Pendente"
+    estado: "Pendente",
+    utilizador_id: ""
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,6 +187,23 @@ const NewOccurrence = () => {
                 onChange={(e) => handleInputChange('cpe_cui', e.target.value)}
                 placeholder="PT0001234567890123456789012"
               />
+            </div>
+
+            {/* Utilizador */}
+            <div className="space-y-2">
+              <Label htmlFor="utilizador_id">Utilizador</Label>
+              <Select value={formData.utilizador_id} onValueChange={(value) => handleInputChange('utilizador_id', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecionar utilizador" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.nome} ({user.email})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Estado */}
