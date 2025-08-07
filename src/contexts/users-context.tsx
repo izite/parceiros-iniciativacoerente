@@ -77,12 +77,22 @@ export function UsersProvider({ children }: { children: ReactNode }) {
 
         if (authError) {
           console.error('Error creating auth user:', authError)
-          toast({
-            title: "Erro",
-            description: "Erro ao criar conta de autenticação.",
-            variant: "destructive"
-          })
-          throw authError
+          // Se o erro for de email inválido, continuar sem criar a conta de auth
+          if (authError.message.includes('invalid') || authError.message.includes('Invalid')) {
+            console.log('Email inválido para autenticação, criando apenas o registo na tabela users')
+            toast({
+              title: "Aviso",
+              description: "Email inválido para autenticação. Utilizador criado apenas na base de dados.",
+              variant: "default"
+            })
+          } else {
+            toast({
+              title: "Erro",
+              description: "Erro ao criar conta de autenticação.",
+              variant: "destructive"
+            })
+            throw authError
+          }
         }
       }
 
