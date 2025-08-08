@@ -1,6 +1,8 @@
 import { useState } from "react"
-import { Search } from "lucide-react"
+import { Search, Plus } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -38,6 +40,7 @@ const autoconsumoData = [
 
 const Autoconsumo = () => {
   const [searchTerm, setSearchTerm] = useState("")
+  const navigate = useNavigate()
 
   const filteredData = autoconsumoData.filter(item =>
     item.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,9 +63,18 @@ const Autoconsumo = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold mb-2">Autoconsumo</h1>
-        <p className="text-muted-foreground">Gestão de propostas de autoconsumo</p>
+      <div className="mb-6 flex justify-between items-start">
+        <div>
+          <h1 className="text-2xl font-semibold mb-2">Autoconsumo</h1>
+          <p className="text-muted-foreground">Gestão de propostas de autoconsumo</p>
+        </div>
+        <Button 
+          onClick={() => navigate("/autoconsumo/novo")}
+          className="bg-orange-500 hover:bg-orange-600 text-white"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Criar Autoconsumo
+        </Button>
       </div>
 
       <div className="mb-6">
