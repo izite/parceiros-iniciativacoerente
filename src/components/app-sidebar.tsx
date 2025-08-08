@@ -1,4 +1,4 @@
-import { Phone, Calculator, FileText, AlertTriangle, ShoppingCart, Leaf, Receipt, Search, Users, HardDrive, MessageSquare, BarChart3, Zap, Home } from "lucide-react"
+import { Phone, Calculator, FileText, AlertTriangle, ShoppingCart, Leaf, Receipt, Search, Users, HardDrive, MessageSquare, BarChart3, Zap, Home, Sun, Bell } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/auth-context"
 
@@ -20,6 +20,8 @@ const items = [
   { title: "Contratos", url: "/contracts", icon: FileText },
   { title: "Ocorrências", url: "/occurrences", icon: AlertTriangle },
   { title: "Pedidos", url: "/requests", icon: ShoppingCart },
+  { title: "Autoconsumo", url: "/autoconsumo", icon: Sun },
+  { title: "Comunicados", url: "/comunicados", icon: Bell },
   { title: "Utilizadores", url: "/users", icon: Users },
   { title: "Drive", url: "/drive", icon: HardDrive },
 ]
