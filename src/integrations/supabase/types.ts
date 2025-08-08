@@ -98,6 +98,7 @@ export type Database = {
           inicio_fornecimento: string | null
           nif: string | null
           notas: string | null
+          numero_id: number
           parceiro_id: string | null
           sub_utilizador: string | null
           tipo_energia: string | null
@@ -119,6 +120,7 @@ export type Database = {
           inicio_fornecimento?: string | null
           nif?: string | null
           notas?: string | null
+          numero_id?: number
           parceiro_id?: string | null
           sub_utilizador?: string | null
           tipo_energia?: string | null
@@ -140,6 +142,7 @@ export type Database = {
           inicio_fornecimento?: string | null
           nif?: string | null
           notas?: string | null
+          numero_id?: number
           parceiro_id?: string | null
           sub_utilizador?: string | null
           tipo_energia?: string | null
@@ -514,6 +517,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_contract_number: {
+        Args: { contract_id: string }
+        Returns: string
+      }
       get_occurrence_number: {
         Args: { occurrence_id: string }
         Returns: string
