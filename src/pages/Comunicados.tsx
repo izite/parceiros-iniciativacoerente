@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Search, Calendar, FileText, Plus } from "lucide-react"
+import { Search, Calendar, FileText, Plus, ChevronRight } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -81,6 +81,8 @@ const Comunicados = () => {
   const [comercializadora, setComercializadora] = useState("")
   const [categoria, setCategoria] = useState("")
   const [observacoes, setObservacoes] = useState("")
+  const [selectedComunicado, setSelectedComunicado] = useState<any>(null)
+  const [detailsOpen, setDetailsOpen] = useState(false)
 
   const categories = ["all", "Preços", "Tarifários", "Gás", "Procedimentos"]
 
@@ -119,6 +121,15 @@ const Comunicados = () => {
     setComercializadora("")
     setCategoria("")
     setObservacoes("")
+  }
+
+  const handleViewComunicado = (comunicado: any) => {
+    setSelectedComunicado(comunicado)
+    setDetailsOpen(true)
+  }
+
+  const getSummary = (texto: string) => {
+    return texto.length > 120 ? texto.substring(0, 120) + "..." : texto
   }
 
   return (
@@ -272,23 +283,65 @@ const Comunicados = () => {
                     {comunicado.anexos > 0 && (
                       <div className="flex items-center text-orange-500 text-sm">
                         <FileText className="h-4 w-4 mr-1" />
-                        {comunicado.anexos} anexo{comunicado.anexos > 1 ? 's' : ''}
+                        {comunicado.anexos} anexo{comunicado.anexos > 1 ? "s" : ""}
                       </div>
                     )}
                   </div>
                   <h3 className="text-lg font-semibold mb-2">{comunicado.titulo}</h3>
-                  <p className="text-muted-foreground text-sm mb-2 line-clamp-2">
-                    {comunicado.descricao}
+                  <p className="text-muted-foreground text-sm mb-2">
+                    {getSummary(comunicado.descricao)}
                   </p>
                   <div className="text-sm font-medium text-primary">
                     {comunicado.empresa}
                   </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleViewComunicado(comunicado)}
+                  className="ml-4 shrink-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Modal para ver comunicado completo */}
+      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogContent className="sm:max-w-[700px]">
+          <DialogHeader>
+            <DialogTitle>{selectedComunicado?.titulo}</DialogTitle>
+          </DialogHeader>
+          {selectedComunicado && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Badge className={getCategoryColor(selectedComunicado.categoria)}>
+                  {selectedComunicado.categoria}
+                </Badge>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  {selectedComunicado.data}
+                </div>
+                {selectedComunicado.anexos > 0 && (
+                  <div className="flex items-center text-orange-500 text-sm">
+                    <FileText className="h-4 w-4 mr-1" />
+                    {selectedComunicado.anexos} anexo{selectedComunicado.anexos > 1 ? "s" : ""}
+                  </div>
+                )}
+              </div>
+              <div className="text-sm font-medium text-primary">
+                {selectedComunicado.empresa}
+              </div>
+              <div className="text-sm leading-relaxed">
+                {selectedComunicado.descricao}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
