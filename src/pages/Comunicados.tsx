@@ -255,33 +255,35 @@ const Comunicados = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-4">
         {filteredData.map((comunicado) => (
           <Card key={comunicado.id} className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between mb-2">
-                <Badge className={getCategoryColor(comunicado.categoria)}>
-                  {comunicado.categoria}
-                </Badge>
-                {comunicado.anexos > 0 && (
-                  <div className="flex items-center text-orange-500 text-sm">
-                    <FileText className="h-4 w-4 mr-1" />
-                    {comunicado.anexos} anexo{comunicado.anexos > 1 ? 's' : ''}
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Badge className={getCategoryColor(comunicado.categoria)}>
+                      {comunicado.categoria}
+                    </Badge>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      {comunicado.data}
+                    </div>
+                    {comunicado.anexos > 0 && (
+                      <div className="flex items-center text-orange-500 text-sm">
+                        <FileText className="h-4 w-4 mr-1" />
+                        {comunicado.anexos} anexo{comunicado.anexos > 1 ? 's' : ''}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="flex items-center text-sm text-muted-foreground mb-2">
-                <Calendar className="h-4 w-4 mr-1" />
-                {comunicado.data}
-              </div>
-              <CardTitle className="text-lg leading-tight">{comunicado.titulo}</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <CardDescription className="line-clamp-3 mb-3">
-                {comunicado.descricao}
-              </CardDescription>
-              <div className="text-sm font-medium text-primary">
-                {comunicado.empresa}
+                  <h3 className="text-lg font-semibold mb-2">{comunicado.titulo}</h3>
+                  <p className="text-muted-foreground text-sm mb-2 line-clamp-2">
+                    {comunicado.descricao}
+                  </p>
+                  <div className="text-sm font-medium text-primary">
+                    {comunicado.empresa}
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
