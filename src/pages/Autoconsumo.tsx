@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Search, Plus } from "lucide-react"
+import { Search, Plus, ChevronRight } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -97,6 +97,7 @@ const Autoconsumo = () => {
               <TableHead>ASSUNTO</TableHead>
               <TableHead>ESTADO</TableHead>
               <TableHead>DATA</TableHead>
+              <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -115,6 +116,16 @@ const Autoconsumo = () => {
                   </Badge>
                 </TableCell>
                 <TableCell>{item.data}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => navigate(`/autoconsumo/${item.id}`)}
+                    className="h-8 w-8"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

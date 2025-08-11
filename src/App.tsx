@@ -31,6 +31,7 @@ import AddContact from "./pages/AddContact";
 import Contacts from "./pages/Contacts";
 import Drive from "./pages/Drive";
 import Autoconsumo from "./pages/Autoconsumo";
+import AutoconsumoDetails from "./pages/AutoconsumoDetails";
 import NovoAutoconsumo from "./pages/NovoAutoconsumo";
 import Comunicados from "./pages/Comunicados";
 import NotFound from "./pages/NotFound";
@@ -65,6 +66,7 @@ const App = () => (
             <Route path="/new-occurrence" element={<LayoutWrapper><NewOccurrence /></LayoutWrapper>} />
             <Route path="/occurrences/:occurrenceId" element={<LayoutWrapper><OccurrenceDetails /></LayoutWrapper>} />
             <Route path="/autoconsumo" element={<LayoutWrapper><Autoconsumo /></LayoutWrapper>} />
+            <Route path="/autoconsumo/:id" element={<LayoutWrapper><AutoconsumoDetails /></LayoutWrapper>} />
             <Route path="/autoconsumo/novo" element={<LayoutWrapper><NovoAutoconsumo /></LayoutWrapper>} />
             <Route path="/comunicados" element={<LayoutWrapper><Comunicados /></LayoutWrapper>} />
             <Route path="/users" element={<LayoutWrapper><Users /></LayoutWrapper>} />
