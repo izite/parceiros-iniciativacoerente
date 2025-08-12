@@ -35,6 +35,8 @@ import AutoconsumoDetails from "./pages/AutoconsumoDetails";
 import NovoAutoconsumo from "./pages/NovoAutoconsumo";
 import Comunicados from "./pages/Comunicados";
 import NotFound from "./pages/NotFound";
+import Simulacoes from "./pages/Simulacoes";
+import NovaSimulacao from "./pages/NovaSimulacao";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +70,8 @@ const App = () => (
             <Route path="/autoconsumo" element={<LayoutWrapper><Autoconsumo /></LayoutWrapper>} />
             <Route path="/autoconsumo/:id" element={<LayoutWrapper><AutoconsumoDetails /></LayoutWrapper>} />
             <Route path="/autoconsumo/novo" element={<LayoutWrapper><NovoAutoconsumo /></LayoutWrapper>} />
+            <Route path="/simulacoes" element={<LayoutWrapper><Simulacoes /></LayoutWrapper>} />
+            <Route path="/simulacoes/nova" element={<LayoutWrapper><NovaSimulacao /></LayoutWrapper>} />
             <Route path="/comunicados" element={<LayoutWrapper><Comunicados /></LayoutWrapper>} />
             <Route path="/users" element={<LayoutWrapper><Users /></LayoutWrapper>} />
             <Route path="/users/add" element={<LayoutWrapper><AddUser /></LayoutWrapper>} />

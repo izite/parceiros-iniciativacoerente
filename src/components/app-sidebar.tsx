@@ -21,6 +21,7 @@ const items = [
   { title: "Ocorrências", url: "/occurrences", icon: AlertTriangle },
   { title: "Pedidos", url: "/requests", icon: ShoppingCart },
   { title: "Autoconsumo", url: "/autoconsumo", icon: Sun },
+  { title: "Simulações", url: "/simulacoes", icon: Calculator },
   { title: "Comunicados", url: "/comunicados", icon: Bell },
   { title: "Utilizadores", url: "/users", icon: Users },
   { title: "Drive", url: "/drive", icon: HardDrive },
