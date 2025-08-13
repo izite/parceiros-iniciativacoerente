@@ -8,11 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
+import { useSimulacoes } from "@/contexts/simulacoes-context"
+import { supabase } from "@/integrations/supabase/client"
 
 const MAX_FILE_SIZE = 30 * 1024 * 1024 // 30 MB
 
 const NovaSimulacao = () => {
   const navigate = useNavigate()
+  const { createSimulacao } = useSimulacoes()
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     nome: "",
     nif: "",
@@ -28,23 +32,69 @@ const NovaSimulacao = () => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true)
 
-    if (formData.fatura) {
-      if (formData.fatura.type !== "application/pdf") {
-        toast.error("A fatura deve ser um ficheiro PDF.")
+    try {
+      // Validações
+      if (!formData.nome.trim()) {
+        toast.error("Nome é obrigatório")
         return
       }
-      if (formData.fatura.size > MAX_FILE_SIZE) {
-        toast.error("Tamanho máximo da fatura é 30 MB.")
+      if (!formData.tipoTarifa) {
+        toast.error("Tipo de tarifa é obrigatório")
         return
       }
+
+      if (formData.fatura) {
+        if (formData.fatura.type !== "application/pdf") {
+          toast.error("A fatura deve ser um ficheiro PDF.")
+          return
+        }
+        if (formData.fatura.size > MAX_FILE_SIZE) {
+          toast.error("Tamanho máximo da fatura é 30 MB.")
+          return
+        }
+      }
+
+      let faturaPath: string | undefined
+
+      // Upload da fatura se existir
+      if (formData.fatura) {
+        const fileName = `simulacoes/faturas/${Date.now()}-${formData.fatura.name}`
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('drive')
+          .upload(fileName, formData.fatura)
+
+        if (uploadError) {
+          console.error('Erro no upload da fatura:', uploadError)
+          toast.error('Erro ao fazer upload da fatura')
+          return
+        }
+
+        faturaPath = uploadData.path
+      }
+
+      // Criar simulação
+      const simulacao = await createSimulacao({
+        nome: formData.nome,
+        nif: formData.nif || undefined,
+        tipo_tarifa: formData.tipoTarifa,
+        prioridade: formData.prioridade,
+        consumo_estimado_kwh: formData.consumoEstimado ? parseFloat(formData.consumoEstimado) : undefined,
+        comissao_estimada_eur: formData.comissaoEstimada ? parseFloat(formData.comissaoEstimada) : undefined,
+        observacoes: formData.observacoes || undefined,
+        fatura_pdf_path: faturaPath,
+        estado: formData.prioridade === 'urgente' ? 'pendente_analise' : 'pendente'
+      })
+
+      if (simulacao) {
+        navigate("/simulacoes")
+      }
+    } finally {
+      setLoading(false)
     }
-
-    // Simula submissão
-    toast.success("Simulação criada com sucesso!")
-    navigate("/simulacoes")
   }
 
   return (
@@ -61,8 +111,12 @@ const NovaSimulacao = () => {
         </div>
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold">Criar Simulação</h1>
-          <Button onClick={handleSubmit} className="bg-orange-500 hover:bg-orange-600 text-white px-8">
-            CRIAR SIMULAÇÃO
+          <Button 
+            onClick={handleSubmit} 
+            disabled={loading}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-8"
+          >
+            {loading ? "A CRIAR..." : "CRIAR SIMULAÇÃO"}
           </Button>
         </div>
       </div>
@@ -177,8 +231,12 @@ const NovaSimulacao = () => {
         </Card>
 
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={() => navigate("/simulacoes")}>Cancelar</Button>
-          <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white">Criar Simulação</Button>
+          <Button type="button" variant="outline" onClick={() => navigate("/simulacoes")} disabled={loading}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={loading} className="bg-orange-500 hover:bg-orange-600 text-white">
+            {loading ? "A criar..." : "Criar Simulação"}
+          </Button>
         </div>
       </form>
     </div>

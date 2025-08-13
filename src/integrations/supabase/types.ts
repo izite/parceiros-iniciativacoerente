@@ -268,6 +268,54 @@ export type Database = {
         }
         Relationships: []
       }
+      documentos_chat_simulacoes: {
+        Row: {
+          autor_id: string
+          caminho_arquivo: string
+          created_at: string
+          id: string
+          nome_arquivo: string
+          simulacao_id: string
+          tamanho_arquivo: number | null
+          tipo_arquivo: string
+        }
+        Insert: {
+          autor_id: string
+          caminho_arquivo: string
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          simulacao_id: string
+          tamanho_arquivo?: number | null
+          tipo_arquivo: string
+        }
+        Update: {
+          autor_id?: string
+          caminho_arquivo?: string
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          simulacao_id?: string
+          tamanho_arquivo?: number | null
+          tipo_arquivo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_chat_simulacoes_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documentos_chat_simulacoes_simulacao_id_fkey"
+            columns: ["simulacao_id"]
+            isOneToOne: false
+            referencedRelation: "simulacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mensagens_chat: {
         Row: {
           autor_id: string
@@ -329,6 +377,48 @@ export type Database = {
           remetente?: string
         }
         Relationships: []
+      }
+      mensagens_chat_simulacoes: {
+        Row: {
+          autor_id: string
+          conteudo: string
+          created_at: string
+          id: string
+          remetente: string
+          simulacao_id: string
+        }
+        Insert: {
+          autor_id: string
+          conteudo: string
+          created_at?: string
+          id?: string
+          remetente: string
+          simulacao_id: string
+        }
+        Update: {
+          autor_id?: string
+          conteudo?: string
+          created_at?: string
+          id?: string
+          remetente?: string
+          simulacao_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_chat_simulacoes_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mensagens_chat_simulacoes_simulacao_id_fkey"
+            columns: ["simulacao_id"]
+            isOneToOne: false
+            referencedRelation: "simulacoes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ocorrencias: {
         Row: {
@@ -459,6 +549,65 @@ export type Database = {
           },
         ]
       }
+      simulacoes: {
+        Row: {
+          comissao_estimada_eur: number | null
+          consumo_estimado_kwh: number | null
+          created_at: string
+          estado: string
+          fatura_pdf_path: string | null
+          id: string
+          nif: string | null
+          nome: string
+          numero: string | null
+          observacoes: string | null
+          prioridade: string
+          tipo_tarifa: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comissao_estimada_eur?: number | null
+          consumo_estimado_kwh?: number | null
+          created_at?: string
+          estado?: string
+          fatura_pdf_path?: string | null
+          id?: string
+          nif?: string | null
+          nome: string
+          numero?: string | null
+          observacoes?: string | null
+          prioridade: string
+          tipo_tarifa: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comissao_estimada_eur?: number | null
+          consumo_estimado_kwh?: number | null
+          created_at?: string
+          estado?: string
+          fatura_pdf_path?: string | null
+          id?: string
+          nif?: string | null
+          nome?: string
+          numero?: string | null
+          observacoes?: string | null
+          prioridade?: string
+          tipo_tarifa?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "simulacoes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           auth_user_id: string | null
@@ -517,6 +666,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_user_is_backoffice: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       get_contract_number: {
         Args: { contract_id: string }
         Returns: string
@@ -528,6 +681,10 @@ export type Database = {
       get_request_number: {
         Args: { request_id: string }
         Returns: string
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
     }
     Enums: {

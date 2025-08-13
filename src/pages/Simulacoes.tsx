@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Search, Plus } from "lucide-react"
+import { Search, Plus, ChevronRight } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -12,53 +12,54 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-// Mock data for simulações
-const simulacoesData = [
-  {
-    id: "S-1001",
-    assunto: "Simulação Tarifária (Indexado)",
-    cliente: "Condomínio Jardim do Sol",
-    estado: "Pendente",
-    data: "05-07-2025",
-  },
-  {
-    id: "S-1002",
-    assunto: "Simulação Tarifária (Fixo)",
-    cliente: "Padaria Central, Lda",
-    estado: "Em Análise",
-    data: "08-07-2025",
-  },
-  {
-    id: "S-1003",
-    assunto: "Simulação Tarifária (Ambos)",
-    cliente: "Maria Santos Residencial",
-    estado: "Fechado",
-    data: "10-07-2025",
-  },
-]
+import { useSimulacoes } from "@/contexts/simulacoes-context"
 
 const Simulacoes = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const navigate = useNavigate()
+  const { simulacoes, loading } = useSimulacoes()
 
-  const filteredData = simulacoesData.filter((item) =>
-    item.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.assunto.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = simulacoes.filter((item) =>
+    item.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.tipo_tarifa.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (item.nif && item.nif.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
   const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case "Fechado":
+    switch (status.toLowerCase()) {
+      case "fechado":
         return "default"
-      case "Pendente":
+      case "pendente":
         return "secondary"
-      case "Em Análise":
+      case "analise":
+      case "análise":
         return "outline"
       default:
         return "secondary"
     }
+  }
+
+  const formatTipoTarifa = (tipo: string) => {
+    switch (tipo) {
+      case "indexado":
+        return "Simulação Tarifária (Indexado)"
+      case "fixo":
+        return "Simulação Tarifária (Fixo)"
+      case "ambos":
+        return "Simulação Tarifária (Ambos)"
+      default:
+        return `Simulação Tarifária (${tipo})`
+    }
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('pt-PT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
   }
 
   return (
@@ -78,7 +79,7 @@ const Simulacoes = () => {
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Cliente, ID ou Assunto"
+            placeholder="Cliente, ID ou Tipo de Tarifa"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -98,21 +99,42 @@ const Simulacoes = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredData.map((item) => (
-              <TableRow key={item.id} className="hover:bg-muted/50">
-                <TableCell className="font-medium">{item.id}</TableCell>
-                <TableCell>
-                  <div>
-                    <div className="font-medium">{item.assunto}</div>
-                    <div className="text-sm text-muted-foreground">{item.cliente}</div>
-                  </div>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8">
+                  A carregar simulações...
                 </TableCell>
-                <TableCell>
-                  <Badge variant={getStatusBadgeVariant(item.estado)}>{item.estado}</Badge>
-                </TableCell>
-                <TableCell>{item.data}</TableCell>
               </TableRow>
-            ))}
+            ) : filteredData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8">
+                  Nenhuma simulação encontrada
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredData.map((item) => (
+                <TableRow 
+                  key={item.id} 
+                  className="hover:bg-muted/50 cursor-pointer"
+                  onClick={() => navigate(`/simulacoes/${item.id}`)}
+                >
+                  <TableCell className="font-medium">{item.numero}</TableCell>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium">{formatTipoTarifa(item.tipo_tarifa)}</div>
+                      <div className="text-sm text-muted-foreground">{item.nome}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusBadgeVariant(item.estado)}>{item.estado}</Badge>
+                  </TableCell>
+                  <TableCell className="flex items-center justify-between">
+                    {formatDate(item.created_at)}
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </section>

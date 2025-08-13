@@ -12,6 +12,7 @@ import { ContractsProvider } from "@/contexts/contracts-context";
 import { ContactsProvider } from "@/contexts/contacts-context";
 import { RequestsProvider } from "@/contexts/requests-context";
 import { OccurrencesProvider } from "@/contexts/occurrences-context";
+import { SimulacoesProvider } from "@/contexts/simulacoes-context";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
@@ -37,6 +38,7 @@ import Comunicados from "./pages/Comunicados";
 import NotFound from "./pages/NotFound";
 import Simulacoes from "./pages/Simulacoes";
 import NovaSimulacao from "./pages/NovaSimulacao";
+import SimulacaoDetails from "./pages/SimulacaoDetails";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,7 @@ const App = () => (
             <ContactsProvider>
               <RequestsProvider>
                 <OccurrencesProvider>
+                  <SimulacoesProvider>
               <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -72,6 +75,7 @@ const App = () => (
             <Route path="/autoconsumo/novo" element={<LayoutWrapper><NovoAutoconsumo /></LayoutWrapper>} />
             <Route path="/simulacoes" element={<LayoutWrapper><Simulacoes /></LayoutWrapper>} />
             <Route path="/simulacoes/nova" element={<LayoutWrapper><NovaSimulacao /></LayoutWrapper>} />
+            <Route path="/simulacoes/:simulacaoId" element={<LayoutWrapper><SimulacaoDetails /></LayoutWrapper>} />
             <Route path="/comunicados" element={<LayoutWrapper><Comunicados /></LayoutWrapper>} />
             <Route path="/users" element={<LayoutWrapper><Users /></LayoutWrapper>} />
             <Route path="/users/add" element={<LayoutWrapper><AddUser /></LayoutWrapper>} />
@@ -81,6 +85,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
               </TooltipProvider>
+                  </SimulacoesProvider>
                 </OccurrencesProvider>
               </RequestsProvider>
             </ContactsProvider>
