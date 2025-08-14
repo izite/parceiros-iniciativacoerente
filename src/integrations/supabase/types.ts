@@ -670,6 +670,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      generate_simulacao_numero: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_contract_number: {
         Args: { contract_id: string }
         Returns: string
